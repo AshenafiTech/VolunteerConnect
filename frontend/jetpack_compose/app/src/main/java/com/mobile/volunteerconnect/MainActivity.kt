@@ -12,7 +12,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.mobile.volunteerconnect.ui.theme.VolunteerConnectTheme
+import com.mobile.volunteerconnect.view.pages.homepage.HomeScreen
 import com.mobile.volunteerconnect.view.pages.login.LoginScreen
+import com.mobile.volunteerconnect.view.pages.signup.SignupScreen
 import dagger.hilt.android.AndroidEntryPoint
 // MainActivity.kt
 @AndroidEntryPoint
@@ -26,7 +28,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()
@@ -47,6 +48,26 @@ fun AppNavigation() {
                 }
             )
         }
-        // Add other destinations
+
+        composable("home") {
+            HomeScreen()
+        }
+
+        composable("signup") {
+            SignupScreen(
+                onSignupSuccess = {
+                    navController.navigate("home") {
+                        popUpTo("signup") { inclusive = true }
+                    }
+                },
+                onLoginClick = {
+                    navController.navigate("login") {
+                        popUpTo("signup") { inclusive = true }
+                    }
+                }
+            )
+        }
+
+
     }
 }

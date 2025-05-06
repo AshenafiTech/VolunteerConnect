@@ -17,9 +17,14 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.mobile.volunteerconnect.R
 import kotlinx.coroutines.launch
@@ -66,18 +71,32 @@ fun LoginScreen(
         ) {
             // App Logo (uncomment when you have the resource)
             Image(
-                painter = painterResource(R.drawable.ic_launcher_foreground),
+                painter = painterResource(R.drawable.logo),
                 contentDescription = "App Logo",
                 modifier = Modifier.size(120.dp)
             )
 
             Spacer(Modifier.height(24.dp))
+            Text(
+                text = "Login",
+                // bold font weight
+                fontSize = 24.sp,
+                fontWeight = MaterialTheme.typography.headlineSmall.fontWeight,
+                style = MaterialTheme.typography.headlineSmall,
 
+                color = Color.Black,    
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
             // App Tagline
             Text(
                 text = "Volunteer. Connect. Impact.",
                 style = MaterialTheme.typography.headlineSmall,
-                color = MaterialTheme.colorScheme.primary,
+
+                fontSize = 14.sp,
+
+
+                color = Color.Gray,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth()
             )
@@ -85,21 +104,30 @@ fun LoginScreen(
             Spacer(Modifier.height(32.dp))
 
             // Email Field
+            Text(
+                text = "Email",
+                textAlign = TextAlign.Start,
+                modifier = Modifier.fillMaxWidth()
+            )
+
             OutlinedTextField(
                 value = uiState.email,
                 onValueChange = viewModel::onEmailChange,
-                label = { Text("Email") },
+
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                 modifier = Modifier.fillMaxWidth()
             )
 
             Spacer(Modifier.height(16.dp))
-
+   Text(
+                text = "Password",
+                textAlign = TextAlign.Start,
+                modifier = Modifier.fillMaxWidth()
+            )
             // Password Field
             OutlinedTextField(
                 value = uiState.password,
                 onValueChange = viewModel::onPasswordChange,
-                label = { Text("Password") },
                 visualTransformation = PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                 modifier = Modifier.fillMaxWidth()
@@ -111,7 +139,11 @@ fun LoginScreen(
             Button(
                 onClick = viewModel::login,
                 modifier = Modifier.fillMaxWidth(),
-                enabled = !uiState.isLoading
+                enabled = !uiState.isLoading,
+                
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF3597DA)),
+                
+                shape = MaterialTheme.shapes.small
             ) {
                 if (uiState.isLoading) {
                     CircularProgressIndicator(
@@ -119,7 +151,8 @@ fun LoginScreen(
                         color = MaterialTheme.colorScheme.onPrimary
                     )
                 } else {
-                    Text("Log In")
+                    Text(text = "Log In",
+                        fontSize = 24.sp,)
                 }
             }
 
@@ -130,7 +163,9 @@ fun LoginScreen(
                 text = buildAnnotatedString {
                     append("Don't have an account? ")
                     withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary)) {
-                        append("Sign Up")
+                        withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary, textDecoration = TextDecoration.Underline, fontWeight = FontWeight.Bold)) {
+                            append("Sign Up")
+                        }
                     }
                 },
                 onClick = { onSignUpClick() },
@@ -147,9 +182,10 @@ fun LoginScreen(
 
 @Composable
 private fun AboutSection() {
-    Column(modifier = Modifier.fillMaxWidth()) {
+    Column(modifier = Modifier.fillMaxWidth(),  horizontalAlignment = Alignment.CenterHorizontally,) {
         Text(
             text = "About us",
+            fontSize = 18.sp,
             style = MaterialTheme.typography.titleMedium
         )
 
@@ -161,11 +197,52 @@ private fun AboutSection() {
         )
 
         Spacer(Modifier.height(16.dp))
-
-        Text(
-            text = "Contact us\nAddis Ababa, Ethiopia\nvolunteerconnect@gmail.com\n+251912246678",
+        Text(text="Contact us", fontSize = 18.sp, )
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Icon(
+            painter = painterResource(id = R.drawable.ic_location), // Replace with your location icon resource
+            contentDescription = "Location Icon",
+            tint = Color.Gray,
+            modifier = Modifier.size(16.dp)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+            text = "Addis Ababa, Ethiopia",
             style = MaterialTheme.typography.bodySmall
-        )
+            )
+        }
+
+        Spacer(Modifier.height(8.dp))
+
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Icon(
+            painter = painterResource(id = R.drawable.ic_email), // Replace with your email icon resource
+            contentDescription = "Email Icon",
+            tint = Color.Gray,
+            modifier = Modifier.size(16.dp)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+            text = "volunteerconnect@gmail.com",
+            style = MaterialTheme.typography.bodySmall
+            )
+        }
+
+        Spacer(Modifier.height(8.dp))
+
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Icon(
+            painter = painterResource(id = R.drawable.ic_phone), // Replace with an existing drawable resource
+            contentDescription = "Phone Icon",
+            tint = Color.Gray,
+            modifier = Modifier.size(16.dp)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+            text = "+251912246678",
+            style = MaterialTheme.typography.bodySmall
+            )
+        }
     }
 }
 

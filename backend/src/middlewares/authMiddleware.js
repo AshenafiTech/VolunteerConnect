@@ -4,10 +4,12 @@ const jwt = require("jsonwebtoken")
 
 async function authMiddleware(req,res,next){  
     const authHeader = req.headers.authorization
+    console.log("authHeader",authHeader)
     if(!authHeader || !authHeader.startsWith("Bearer ")){
        return res.status(StatusCodes.UNAUTHORIZED).json({msg:" 1 unauthorized"})
 }
 const token = authHeader.split(" ")[1]
+console.log(token)
 
 try{
     const {username,userid,role} = jwt.verify(token,process.env.JWT_SECRET)

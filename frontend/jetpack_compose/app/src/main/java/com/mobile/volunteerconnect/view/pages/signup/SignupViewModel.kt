@@ -1,22 +1,26 @@
-package com.mobile.volunteerconnect.view.pages.login
+package com.mobile.volunteerconnect.view.pages.signup
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.mobile.volunteerconnect.data.model.LoginRequest
-import com.mobile.volunteerconnect.data.repository.LoginRepository
+import com.mobile.volunteerconnect.data.model.SignupRequest
+import com.mobile.volunteerconnect.data.repository.SignupRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class LoginViewModel @Inject constructor(
-    private val repository: LoginRepository
+class SignupViewModel @Inject constructor(
+    private val repository: SignupRepository
 ) : ViewModel() {
-    var uiState by mutableStateOf(LoginUiState())
+    var uiState by mutableStateOf(SignupUiState())
         private set
+
+    fun onNameChange(name: String) {
+        uiState = uiState.copy(name = name)
+    }
 
     fun onEmailChange(email: String) {
         uiState = uiState.copy(email = email)
@@ -26,30 +30,32 @@ class LoginViewModel @Inject constructor(
         uiState = uiState.copy(password = password)
     }
 
-    fun login() {
+    fun onRoleChange(role: String) {
+        uiState = uiState.copy(role = role)
+    }
+
+    fun signup() {
         viewModelScope.launch {
-            uiState = uiState.copy(isLoading = true, error = null)
+            uiState = uiState.copy(isLoading = true)
             try {
-                val response = repository.login(
-                    LoginRequest(
+                val response = repository.signup(
+                    SignupRequest(
+                        name = uiState.name,
                         email = uiState.email,
-                        password = uiState.password
+                        password = uiState.password,
+                        role = uiState.role
                     )
                 )
-
                 uiState = uiState.copy(
                     isLoading = false,
                     isSuccess = true,
                     token = response.token,
-                    user = response.user,
-
+                    user = response.user
                 )
-                print(uiState.token)
-
             } catch (e: Exception) {
                 uiState = uiState.copy(
                     isLoading = false,
-                    error = e.message ?: "Unknown error occurred"
+                    error = e.message ?: "Signup failed"
                 )
             }
         }
