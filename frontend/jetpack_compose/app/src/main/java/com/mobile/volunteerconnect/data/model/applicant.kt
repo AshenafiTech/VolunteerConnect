@@ -1,3 +1,3 @@
 package com.mobile.volunteerconnect.data.model
 
-class applicant : ArrayList<applicantItem>()
+class applicant : ArrayList<ApplicantItem>()

@@ -2,7 +2,7 @@ package com.mobile.volunteerconnect.view.pages.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.mobile.volunteerconnect.data.model.applicantItem
+import com.mobile.volunteerconnect.data.model.ApplicantItem
 import com.mobile.volunteerconnect.data.repository.applicantsRepo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,8 +18,8 @@ class ApplicantsViewModel @Inject constructor(
     private val _isLoading = MutableStateFlow(true)
     val isLoading: StateFlow<Boolean> = _isLoading
 
-    private val _applicants = MutableStateFlow<List<applicantItem>>(emptyList())
-    val applicants: StateFlow<List<applicantItem>> = _applicants
+    private val _applicants = MutableStateFlow<List<ApplicantItem>>(emptyList())
+    val applicants: StateFlow<List<ApplicantItem>> = _applicants
 
     init {
         viewModelScope.launch {

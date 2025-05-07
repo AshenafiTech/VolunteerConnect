@@ -2,7 +2,7 @@ package com.mobile.volunteerconnect.data.model
 
 import com.google.gson.annotations.SerializedName
 
-data class applicantItem(
+data class ApplicantItem(
     @SerializedName("applied_at")
     val appliedAt: String = "",
     @SerializedName("avatar_url")

@@ -8,7 +8,6 @@ import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 
-// Defines the status of an application whether it's approved pending canceled or other
 
 sealed class ApplicationStatus(
     val label: String,

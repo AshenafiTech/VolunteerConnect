@@ -11,10 +11,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.myapp.ui.theme.components.ApplicantRow
+import com.mobile.volunteerconnect.view.pages.components.ApplicantRow
 import com.mobile.volunteerconnect.view.pages.components.ApplicantsSummary
 import com.mobile.volunteerconnect.view.pages.components.TopBarComponent
 import com.mobile.volunteerconnect.view.pages.viewmodel.ApplicantsViewModel
+import com.mobile.volunteerconnect.data.model.ApplicantItem
+import androidx.compose.foundation.lazy.items
 
 
 @Composable
@@ -31,22 +33,18 @@ fun ViewApplicants(viewModel: ApplicantsViewModel = hiltViewModel()) {
             CircularProgressIndicator()
         }
     } else {
-        // Main content for ApplicantsScreen
         Column(modifier = Modifier.fillMaxSize()) {
-            // Top bar
             TopBarComponent("Applicants List")
 
-            // Applicants summary
             ApplicantsSummary(applicants.size)
 
-            // List of applicants
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
 //                    .padding(16.dp)
             ) {
                 items(applicants) { applicant ->
-                    ApplicantRow(applicant) // Corrected here to use applicantItem
+                    ApplicantRow(applicant)
                     HorizontalDivider(
                         thickness = 0.5.dp,
                         color = Color.LightGray,

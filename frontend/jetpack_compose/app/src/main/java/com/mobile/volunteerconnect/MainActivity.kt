@@ -11,6 +11,8 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.mobile.volunteerconnect.navigation.OrgNavGraph.OrgNavigation
+import com.mobile.volunteerconnect.navigation.UserNavGraph.UserNavigation
 import com.mobile.volunteerconnect.ui.theme.VolunteerConnectTheme
 import com.mobile.volunteerconnect.view.pages.homepage.HomeScreen
 import com.mobile.volunteerconnect.view.pages.login.LoginScreen
@@ -23,7 +25,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             VolunteerConnectTheme {
-                AppNavigation()
+                OrgNavigation()
             }
         }
     }

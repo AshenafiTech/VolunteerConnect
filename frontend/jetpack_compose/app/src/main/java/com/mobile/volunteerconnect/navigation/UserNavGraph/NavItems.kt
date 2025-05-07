@@ -1,8 +1,8 @@
 package com.example.myapp.ui.theme.navigation.UserNavGraph
 
 
-import com.example.myapp.R
 import com.example.volunteerconnectjetpackcompose.ui.theme.navigation.UserNavGraph.UserScreens
+import com.mobile.volunteerconnect.R
 
 data class NavItem(
     val label: String,

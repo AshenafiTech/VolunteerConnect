@@ -52,7 +52,6 @@ fun SegmentedControl(selectedOption: MutableState<Int>) {
 @Preview(showBackground = true, widthDp = 360)
 @Composable
 fun SegmentedControlPreview() {
-    // Start with "All" selected (index 0)
     val selectedOption = remember { mutableStateOf(0) }
     SegmentedControl(selectedOption)
 }
