@@ -1,5 +1,6 @@
 package com.mobile.volunteerconnect.data.api
 
+import com.mobile.volunteerconnect.data.model.userAppliedEvent
 import retrofit2.http.GET
 
 interface userApplicationApi {
@@ -7,3 +8,5 @@ interface userApplicationApi {
 
     suspend fun getUserApplication(): userAppliedEvent
 }
+
+
