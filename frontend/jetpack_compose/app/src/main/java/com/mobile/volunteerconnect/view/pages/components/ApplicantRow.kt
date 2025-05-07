@@ -24,7 +24,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import com.example.myapp.data.model.applicantItem
+import com.mobile.volunteerconnect.data.model.applicantItem
 
 @Composable
 fun ApplicantRow(applicant: applicantItem) {

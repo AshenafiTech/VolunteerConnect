@@ -13,8 +13,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.mobile.volunteerconnect.view.pages.components.Application
-import com.example.volunteerconnectjetpackcompose.ui.theme.Data.ApplicationDataModel.ApplicationStatus
 
 
 @Composable

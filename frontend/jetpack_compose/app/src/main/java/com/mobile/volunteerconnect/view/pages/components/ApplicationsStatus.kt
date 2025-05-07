@@ -1,4 +1,4 @@
-package com.example.volunteerconnectjetpackcompose.ui.theme.Data.ApplicationDataModel
+package com.mobile.volunteerconnect.view.pages.components
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
