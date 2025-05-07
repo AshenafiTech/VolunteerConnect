@@ -14,26 +14,23 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
+
     @Provides
     @Singleton
     fun provideOkHttpClient(): OkHttpClient {
         return OkHttpClient.Builder()
             .addInterceptor(HttpLoggingInterceptor().apply {
-                level = if (true) {
-                    HttpLoggingInterceptor.Level.BODY
-                } else {
-                    HttpLoggingInterceptor.Level.NONE
-                }
+                level = HttpLoggingInterceptor.Level.BODY
             })
             .build()
     }
 
     @Provides
     @Singleton
+    @GeneralRetrofit
     fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit {
         return Retrofit.Builder()
             .baseUrl("http://10.0.2.2:5500/")
-            // Replace with your actual base URL
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
@@ -41,7 +38,7 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideApiService(retrofit: Retrofit): ApiService {
+    fun provideApiService(@GeneralRetrofit retrofit: Retrofit): ApiService {
         return retrofit.create(ApiService::class.java)
     }
 }
