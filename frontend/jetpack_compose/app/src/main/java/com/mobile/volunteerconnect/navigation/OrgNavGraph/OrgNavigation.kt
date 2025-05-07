@@ -11,11 +11,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.*
-import com.example.myapp.ui.theme.organization.screens.CreatePost
-import com.example.myapp.ui.theme.organization.screens.ViewApplicants
+import com.mobile.volunteerconnect.view.pages.organization.screens.CreatePost
+import com.mobile.volunteerconnect.view.pages.organization.screens.ViewApplicants
 import com.example.volunteerconnectjetpackcompose.ui.theme.organization.screens.*
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.mobile.volunteerconnect.view.pages.organization.screens.Home
+import com.mobile.volunteerconnect.view.pages.organization.screens.UserProfile
 
 
 data class OrgNavItem(

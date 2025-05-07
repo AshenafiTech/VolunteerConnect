@@ -15,8 +15,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.*
 import com.example.myapp.ui.theme.navigation.UserNavGraph.listOfNavItems
 import com.example.volunteerconnectjetpackcompose.ui.theme.navigation.UserNavGraph.UserScreens
-import com.example.volunteerconnectjetpackcompose.ui.theme.user.screens.Explore
-import com.example.myapp.ui.theme.user.screens.Home
+import com.mobile.volunteerconnect.view.pages.user.screens.Explore
+import com.mobile.volunteerconnect.view.pages.user.screens.Home
 import com.example.myapp.ui.theme.user.screens.MyApplication
 import com.example.volunteerconnectjetpackcompose.ui.theme.user.screens.Profile
 
