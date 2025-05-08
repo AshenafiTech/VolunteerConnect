@@ -1,6 +1,7 @@
 package com.mobile.volunteerconnect.view.pages.createpost
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
@@ -9,11 +10,17 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.mobile.volunteerconnect.R
 
 
 @SuppressLint("StateFlowValueCalledInComposition")
@@ -37,10 +44,21 @@ fun CreatePostScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(
-                        "Create New Post",
-                        style = MaterialTheme.typography.titleLarge
-                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            "Create New Post",
+                            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
+                        )
+                        Image(
+                            painter = painterResource(R.drawable.logo),
+                            contentDescription = "App Logo",
+                            modifier = Modifier.size(60.dp)
+                        )
+                    }
                 },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
@@ -49,7 +67,8 @@ fun CreatePostScreen(
                             contentDescription = "Back"
                         )
                     }
-                }
+                },
+                modifier = Modifier.shadow(elevation = 4.dp) // Adds a bottom shadow
             )
         }
     ) { padding ->
@@ -60,6 +79,14 @@ fun CreatePostScreen(
                 .verticalScroll(scrollState)
                 .padding(horizontal = 16.dp)
         ) {
+            Spacer(modifier = Modifier.height(24.dp))
+            Text(
+                text = "Create Post",
+
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier.padding(bottom = 4.dp)
+            )
+            Spacer(modifier = Modifier.height(16.dp))
             Text(
                 text = "Fill in the details for your volunteer Activity",
                 style = MaterialTheme.typography.bodyMedium,

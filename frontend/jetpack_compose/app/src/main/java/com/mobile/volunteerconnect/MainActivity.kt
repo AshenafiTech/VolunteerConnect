@@ -58,7 +58,7 @@ fun AppNavigation(userPreferences: UserPreferences) {
     } else {
         NavHost(
             navController = navController,
-            startDestination = if (isTokenValid) Login.route else Home.route
+            startDestination = if (isTokenValid) Home.route else Login.route
         ) {
             composable(Login.route) {
                 LoginScreen(

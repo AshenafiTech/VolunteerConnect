@@ -3,6 +3,7 @@ const { StatusCodes } = require("http-status-codes");
 const jwt = require("jsonwebtoken");
 const { v4: uuidv4 } = require("uuid");
 const {getBase64ImageFromUrl} = require("../utils/serveImage");
+const db = require("../config/db");
 
 
 async function createEvent(req, res) {
@@ -671,9 +672,118 @@ async function getUserEventApplications(req, res) {
   }
 }
 
+const getTokenData = (req) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader?.startsWith('Bearer ')) return null;
+  const token = authHeader.split(' ')[1];
+  try {
+    return jwt.verify(token, process.env.JWT_SECRET);
+  } catch {
+    return null;
+  }
+};
+
+const deleteApplication = async (req, res) => {
+
+  const tokenData = getTokenData(req);
+  console.log("Token data:", tokenData); // Debug
+
+  // Only allow users (not organizations)
+  if (tokenData?.role === "organization") {
+    return res.status(403).json({ message: 'Only users can delete applications.' });
+  }
+
+  const applicationId = req.params.id;
+
+  if (!applicationId) {
+    return res.status(400).json({ message: 'Application ID is required.' });
+  }
+
+  try {
+    console.log(`Trying to delete application ID ${applicationId} for user ID ${tokenData.userid}`);
+
+    const [result] = await dbConnection.execute(
+      'DELETE FROM applications WHERE id = ? AND user_id = ?',
+      [applicationId, tokenData.userid]
+    );
+
+    console.log("Delete result:", result);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Application not found or not owned by user.' });
+    }
+
+    return res.status(200).json({ message: 'Application deleted successfully.' });
+
+  } catch (error) {
+    console.error("Delete error:", error); // ✅ This will now show the real issue
+    return res.status(500).json({
+      message: 'Error deleting application',
+      error: error.message || error.toString(),
+    });
+  }
+};
+
+const approveApplication = async (req, res) => {
+
+  const tokenData = getTokenData(req);
+  if (!tokenData?.role == "volunteer") {
+    return res.status(403).json({ message: 'Only organizations can approve applications.' });
+  }
+
+  const applicationId = req.params.id;
+
+  try {
+    const [check] = await dbConnection.execute(
+      'SELECT * FROM applications WHERE id = ? AND organization = ?',
+      [applicationId, tokenData.name]
+    );
+
+    if (check.length === 0) {
+      return res.status(404).json({ message: 'Application not found or not associated with your organization.' });
+    }
+
+    await dbConnection.execute(
+      'UPDATE applications SET status = ? WHERE id = ?',
+      ['Approved', applicationId]
+    );
+
+    res.status(200).json({ message: 'Application approved.' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error approving application', error });
+  }
+};
 
 
+const rejectApplication = async (req, res) => {
+  
+  const tokenData = getTokenData(req);
+  if (!tokenData?.role == "volunteer") {
+    return res.status(403).json({ message: 'Only organizations can approve applications.' });
+  }
 
+  const applicationId = req.params.id;
+
+  try {
+    const [check] = await dbConnection.execute(
+      'SELECT * FROM applications WHERE id = ? AND organization = ?',
+      [applicationId, tokenData.name]
+    );
+
+    if (check.length === 0) {
+      return res.status(404).json({ message: 'Application not found or not associated with your organization.' });
+    }
+
+    await dbConnection.execute(
+      'UPDATE applications SET status = ? WHERE id = ?',
+      ['Canceled', applicationId]
+    );
+
+    res.status(200).json({ message: 'Application approved.' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error approving application', error });
+  }
+};
 
 module.exports = {
     createEvent,
@@ -684,5 +794,8 @@ module.exports = {
     getOrganizationEvents,
     applyForEvent,
     getUserEventApplications,
-    getEventApplicants
+    getEventApplicants,
+    deleteApplication,
+    approveApplication,
+    rejectApplication
     };
