@@ -1,4 +1,5 @@
 const express = require("express");
+const { saveImageToPublic } = require("../utils/saveImageToPublic");
 const router = express.Router();
 const { 
     createEvent, 
@@ -16,13 +17,13 @@ const authMiddleware = require("../middlewares/authMiddleware");
 const adminMiddleware = require("../middlewares/adminMiddleware");
 
 
-router.post("/events/create", createEvent); // create new event
+router.post("/events/create", saveImageToPublic, createEvent); // create new event
 
 router.get("/events/org", getOrganizationEvents) // all events by organization
 
-router.get("/applications/:eventId", getEventById); // post details by id
+router.get("/applications/:id", getEventById); // post details by id
 router.delete("/application/:eventId", deleteEvent); // delete event by id
-router.put("/application/update/:eventId", updateEvent);  // update event by id
+router.put("/application/update/:eventId", saveImageToPublic, updateEvent);  // update event by id
 
 router.get("/application/getallapplications",authMiddleware, getAllEvents);    // explore
 

@@ -2,7 +2,8 @@ const dbConnection = require("../config/db");
 const { StatusCodes } = require("http-status-codes");
 const jwt = require("jsonwebtoken");
 const { v4: uuidv4 } = require("uuid");
-const { get } = require("../routes/application.route");
+const {getBase64ImageFromUrl} = require("../utils/serveImage");
+
 
 async function createEvent(req, res) {
   const authHeader = req.headers.authorization;
@@ -23,11 +24,17 @@ async function createEvent(req, res) {
       return res.status(StatusCodes.FORBIDDEN).json({ message: "Only organizations can create events" });
     }
 
-    const { 
-      title, subtitle, category, date, time, location,
-      spotsLeft, image, description, requirements,
-      additionalInfo, contactPhone, contactEmail, contactTelegram
-    } = req.body;
+  
+
+const { 
+  title, subtitle, category, date, time, location,
+  spotsLeft, description, requirements,
+  additionalInfo, contactPhone, contactEmail, contactTelegram
+} = req.body;
+console.log(req.body)
+
+const image = req.file ? `/images/${req.file.filename}` : null;
+
 
     if (!title || !date || !time || !location) {
       return res.status(StatusCodes.BAD_REQUEST).json({ 
@@ -56,7 +63,7 @@ async function createEvent(req, res) {
       "SELECT * FROM events WHERE uuid = ?", 
       [uuid]
     );
-
+    console.log("Event Created Successfully")
     return res.status(StatusCodes.CREATED).json({
       message: "Event created successfully",
       event: {
@@ -113,11 +120,13 @@ async function updateEvent(req, res) {
       });
     }
 
-    const {
-      title, subtitle, category, date, time, location,
-      spotsLeft, image, description, requirements,
-      additionalInfo, contactPhone, contactEmail, contactTelegram
-    } = req.body;
+    const { 
+  title, subtitle, category, date, time, location,
+  spotsLeft, description, requirements,
+  additionalInfo, contactPhone, contactEmail, contactTelegram
+} = req.body;
+
+const image = req.file ? `/images/${req.file.filename}` : null;
 
     const parsedRequirements = requirements ? JSON.stringify(requirements) : null;
     const parsedAdditionalInfo = additionalInfo ? JSON.stringify(additionalInfo) : null;
@@ -231,55 +240,108 @@ async function deleteEvent(req, res) {
 }
 
 async function getEventById(req, res) {
-  const { eventId } = req.params;
+
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return res.status(StatusCodes.UNAUTHORIZED).json({ message: "Authorization required" });
+  }
+
+  const token = authHeader.split(" ")[1];
 
   try {
-    const [event] = await dbConnection.query(
-      "SELECT * FROM events WHERE id = ?", 
-      [eventId]
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const userId = decoded.userid;
+    const userRole = decoded.role;
+
+    const { id } = req.params;
+
+    const [application] = await dbConnection.query(
+      "SELECT * FROM  events WHERE id = ?", 
+      [id]
     );
 
-    if (!event || event.length === 0) {
-      return res.status(StatusCodes.NOT_FOUND).json({ message: "Event not found" });
+    if (!application.length) {
+      return res.status(StatusCodes.NOT_FOUND).json({ message: "Application not found" });
     }
 
+    const applicationData = application[0];
+
+
+
+    let base64Image = null;
+    const baseURL = 'http://localhost:5500/public'; 
+    if (applicationData.image) {
+      base64Image = await getBase64ImageFromUrl(`${baseURL + applicationData.image}`);
+      
+    }
+
+    const requirements = applicationData.requirements ? JSON.parse(applicationData.requirements) : null;
+    const additionalInfo = applicationData.additionalInfo ? JSON.parse(applicationData.additionalInfo) : null;
+
     return res.status(StatusCodes.OK).json({
-      event: {
-        ...event[0],
-        requirements: event[0].requirements ? JSON.parse(event[0].requirements) : null,
-        additionalInfo: event[0].additionalInfo ? JSON.parse(event[0].additionalInfo) : null
-      }
+      id: applicationData.id,
+      title: applicationData.title,
+      subtitle: applicationData.subtitle,
+      category: applicationData.category,
+      date: applicationData.date,
+      time: applicationData.time,
+      location: applicationData.location,
+      spotsLeft: applicationData.spotsLeft,
+      image: base64Image, // Send Base64 image
+      description: applicationData.description,
+      requirements,
+      additionalInfo,
+      contactPhone: applicationData.contactPhone,
+      contactEmail: applicationData.contactEmail,
+      contactTelegram: applicationData.contactTelegram
     });
 
   } catch (error) {
-    console.error("Get Event Error:", error.message);
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ 
-      message: "Failed to retrieve event" 
-    });
+    console.error("Get Application Error:", error.message);
+
+    if (error instanceof jwt.JsonWebTokenError) {
+      return res.status(StatusCodes.UNAUTHORIZED).json({ message: "Invalid token" });
+    }
+
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Failed to retrieve application" });
   }
 }
 
+
 async function getAllEvents(req, res) {
-    try {
-        const [events] = await dbConnection.query("SELECT * FROM events");
-    
-        const parsedEvents = events.map(event => ({
+  console.log("get all events");
+  try {
+    const [events] = await dbConnection.query("SELECT * FROM events");
+
+    const baseURL = "http://localhost:5500/public";
+
+    const parsedEvents = await Promise.all(events.map(async (event) => {
+      const imagePath = event.image ? `${baseURL}${event.image}` : null;
+
+      let base64Image = null;
+      if (imagePath) {
+        console.log("retrieving image from:", imagePath);
+        base64Image = await getBase64ImageFromUrl(imagePath);
+      }
+
+      return {
         ...event,
         requirements: event.requirements ? JSON.parse(event.requirements) : null,
-        additionalInfo: event.additionalInfo ? JSON.parse(event.additionalInfo) : null
-        }));
-    
-        return res.status(StatusCodes.OK).json({ events: parsedEvents });
-    
-    } catch (error) {
-        console.error("Get All Events Error:", error.message);
-        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ 
-        message: "Failed to retrieve events" 
-        });
-    }
-    }
+        additionalInfo: event.additionalInfo ? JSON.parse(event.additionalInfo) : null,
+        image: base64Image, // Base64 encoded image
+      };
+    }));
 
+    return res.status(StatusCodes.OK).json({ events: parsedEvents });
 
+  } catch (error) {
+    console.error("Get All Events Error:", error.message);
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ 
+      message: "Failed to retrieve events" 
+    });
+  }
+}
 async function getOrganizationEvents(req, res) {
   const authHeader = req.headers.authorization;
   
