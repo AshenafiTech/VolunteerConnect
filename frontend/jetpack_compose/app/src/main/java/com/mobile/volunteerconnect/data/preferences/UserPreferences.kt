@@ -34,4 +34,15 @@ class UserPreferences @Inject constructor(private val context: Context) {
     }
 
     suspend fun getToken(): String? = context.dataStore.data.map { it[TOKEN] }.first()
+    suspend fun getUserName(): String? {
+        return context.dataStore.data.map { it[USER_NAME] }.first()
+    }
+
+    suspend fun getUserRole(): String? {
+        return context.dataStore.data.map { it[USER_ROLE] }.first()
+    }
+
+    suspend fun getUserEmail(): String? {
+        return context.dataStore.data.map { it[USER_EMAIL] }.first()
+    }
 }
