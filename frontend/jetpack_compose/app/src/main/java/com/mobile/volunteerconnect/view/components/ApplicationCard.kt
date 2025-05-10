@@ -71,7 +71,9 @@ fun ApplicationCard(
                     modifier = Modifier.size(16.dp)
                 )
                 Spacer(modifier = Modifier.width(4.dp))
-                Text("${application.date}   ${application.time}", style = MaterialTheme.typography.bodySmall)
+                val displayTime = application.time?: "08:00 - 11:00"
+
+                Text("${application.date}   $displayTime", style = MaterialTheme.typography.bodySmall)
             }
 
             if (application.status is ApplicationStatus.Pending) {

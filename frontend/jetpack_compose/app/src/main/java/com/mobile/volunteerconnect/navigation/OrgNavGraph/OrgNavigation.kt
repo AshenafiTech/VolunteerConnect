@@ -97,8 +97,8 @@ fun OrgNavigation() {
         ) {
             composable(OrgScreens.Home.name) { Home() }
             composable(OrgScreens.CreatePost.name) { CreatePost() }
-//            composable(OrgScreens.ViewApplicants.name) { ViewApplicants(navController) }
-            composable(OrgScreens.ViewApplicants.name) { ViewApplicants() }
+            composable(OrgScreens.ViewApplicants.name) { ViewApplicants(navController) }
+//            composable(OrgScreens.ViewApplicants.name) { ViewApplicants() }
             composable(OrgScreens.UserProfile.name) { UserProfile() }
             composable("ApplicantProfile/{userId}") { backStackEntry ->
                 val userId = backStackEntry.arguments?.getString("userId")

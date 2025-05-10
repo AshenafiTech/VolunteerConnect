@@ -1,6 +1,9 @@
 package com.mobile.volunteerconnect.network
 
+import com.mobile.volunteerconnect.data.api.ApiConstants
 import com.mobile.volunteerconnect.data.api.ApiService
+import com.mobile.volunteerconnect.data.api.applicantApi
+import com.mobile.volunteerconnect.data.api.userApplicationApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -14,16 +17,14 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
+
     @Provides
     @Singleton
-    fun provideOkHttpClient(): OkHttpClient {
+    fun provideOkHttpClient(authInterceptor: AuthInterceptor): OkHttpClient {
         return OkHttpClient.Builder()
+            .addInterceptor(authInterceptor) // <- Important: Adds token to all requests
             .addInterceptor(HttpLoggingInterceptor().apply {
-                level = if (true) {
-                    HttpLoggingInterceptor.Level.BODY
-                } else {
-                    HttpLoggingInterceptor.Level.NONE
-                }
+                level = HttpLoggingInterceptor.Level.BODY
             })
             .build()
     }
@@ -32,8 +33,7 @@ object NetworkModule {
     @Singleton
     fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit {
         return Retrofit.Builder()
-            .baseUrl("http://10.0.2.2:5500/")
-            // Replace with your actual base URL
+            .baseUrl(ApiConstants.BASE_URL)
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
@@ -43,5 +43,17 @@ object NetworkModule {
     @Singleton
     fun provideApiService(retrofit: Retrofit): ApiService {
         return retrofit.create(ApiService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideUserApplicationApi(retrofit: Retrofit): userApplicationApi {
+        return retrofit.create(userApplicationApi::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideApplicantApi(retrofit: Retrofit): applicantApi {
+        return retrofit.create(applicantApi::class.java)
     }
 }
