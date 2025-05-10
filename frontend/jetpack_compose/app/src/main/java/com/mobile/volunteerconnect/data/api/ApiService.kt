@@ -24,7 +24,7 @@ interface ApiService {
     @GET("/api/checkUser")
     suspend fun checkUser(@Header("Authorization") token: String): Response<Unit>
 
-    @GET("api/events/org")
+    @GET("/api/events")
     suspend fun getOrgEvents(): EventResponse
 
     @DELETE("api/applications/{eventId}")
