@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun ApplicationCard(
     application: Application,
-    onCancelClick: (() -> Unit)? = null
+    onCancelClick: ((String) -> Unit)? = null
 ) {
     Card(
         modifier = Modifier
@@ -71,7 +71,7 @@ fun ApplicationCard(
                     modifier = Modifier.size(16.dp)
                 )
                 Spacer(modifier = Modifier.width(4.dp))
-                val displayTime = application.time?: "08:00 - 11:00"
+                val displayTime = application.time ?: "08:00 - 11:00"
 
                 Text("${application.date}   $displayTime", style = MaterialTheme.typography.bodySmall)
             }
@@ -84,25 +84,11 @@ fun ApplicationCard(
                     modifier = Modifier
                         .align(Alignment.End)
                         .clickable(enabled = onCancelClick != null) {
-                            onCancelClick?.invoke()
+                            onCancelClick?.invoke(application.eventId) // Pass the eventId
                         },
                     fontWeight = FontWeight.Bold
                 )
             }
         }
     }
-}
-
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun ApplicationCardPreview() {
-    val previewApp = Application(
-        status = ApplicationStatus.Pending,
-        appliedDate = "Sat, 20 May",
-        title = "Community Garden Cleanup",
-        organization = "Green Earth Foundation",
-        date = "Thu, 15 Jun",
-        time = "09:00 - 13:00"
-    )
-    ApplicationCard(application = previewApp)
 }

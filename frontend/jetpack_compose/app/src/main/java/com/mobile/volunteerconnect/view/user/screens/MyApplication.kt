@@ -20,6 +20,49 @@ import com.mobile.volunteerconnect.view.components.TopBarComponent
 import com.mobile.volunteerconnect.viewModel.MyApplicationViewModel
 import androidx.compose.foundation.lazy.items
 
+//@Composable
+//fun MyApplication(viewModel: MyApplicationViewModel = hiltViewModel()) {
+//    val selectedOption = remember { mutableStateOf(0) }
+//
+//    val applicationsResponse = viewModel.state.collectAsState(initial = emptyList())
+//    val isLoading = viewModel.isLoading.collectAsState(initial = true)
+//
+//    val applications = applicationsResponse.value.map { response ->
+//        Application(
+//            status = ApplicationStatus.fromString(response.status),
+//            appliedDate = response.appliedAt,
+//            title = response.title,
+//            organization = response.subtitle,
+//            date = response.date,
+//            time = response.time
+//        )
+//    }
+//
+//    val filteredApplications = when (selectedOption.value) {
+//        1 -> applications.filter { it.status is ApplicationStatus.Pending }
+//        2 -> applications.filter { it.status is ApplicationStatus.Approved }
+//        3 -> applications.filter { it.status is ApplicationStatus.Canceled || it.status is ApplicationStatus.Other }
+//        else -> applications
+//    }
+//
+//    Surface(modifier = Modifier.fillMaxSize(), color = Color(0xFFF8F9FB)) {
+//        Column(modifier = Modifier.fillMaxSize()) {
+//            TopBarComponent("My Application")
+//            SegmentedControl(selectedOption)
+//            if (isLoading.value) {
+//                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+//                    CircularProgressIndicator()
+//                }
+//            } else {
+//                LazyColumn(modifier = Modifier.fillMaxSize()) {
+//                    items(items = filteredApplications) { application ->
+//                        ApplicationCard(application = application)
+//                    }
+//                }
+//
+//            }}}
+//}
+
 @Composable
 fun MyApplication(viewModel: MyApplicationViewModel = hiltViewModel()) {
     val selectedOption = remember { mutableStateOf(0) }
@@ -34,7 +77,8 @@ fun MyApplication(viewModel: MyApplicationViewModel = hiltViewModel()) {
             title = response.title,
             organization = response.subtitle,
             date = response.date,
-            time = response.time
+            time = response.time,
+            eventId = response.eventId // Use eventId from the response
         )
     }
 
@@ -49,6 +93,7 @@ fun MyApplication(viewModel: MyApplicationViewModel = hiltViewModel()) {
         Column(modifier = Modifier.fillMaxSize()) {
             TopBarComponent("My Application")
             SegmentedControl(selectedOption)
+
             if (isLoading.value) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     CircularProgressIndicator()
@@ -56,9 +101,15 @@ fun MyApplication(viewModel: MyApplicationViewModel = hiltViewModel()) {
             } else {
                 LazyColumn(modifier = Modifier.fillMaxSize()) {
                     items(items = filteredApplications) { application ->
-                        ApplicationCard(application = application)
+                        ApplicationCard(
+                            application = application,
+                            onCancelClick = { eventId ->
+                                viewModel.deleteApplication(eventId)
+                            }
+                        )
                     }
                 }
-
-            }}}
+            }
+        }
+    }
 }

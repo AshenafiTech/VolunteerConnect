@@ -4,6 +4,7 @@ import com.mobile.volunteerconnect.data.api.ApiConstants
 import com.mobile.volunteerconnect.data.api.ApiService
 import com.mobile.volunteerconnect.data.api.applicantApi
 import com.mobile.volunteerconnect.data.api.userApplicationApi
+import com.mobile.volunteerconnect.data.repository.OrgEventsRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -56,4 +57,11 @@ object NetworkModule {
     fun provideApplicantApi(retrofit: Retrofit): applicantApi {
         return retrofit.create(applicantApi::class.java)
     }
+
+    @Provides
+    @Singleton
+    fun provideOrgEventsRepository(apiService: ApiService): OrgEventsRepository {
+        return OrgEventsRepository(apiService)
+    }
+
 }
