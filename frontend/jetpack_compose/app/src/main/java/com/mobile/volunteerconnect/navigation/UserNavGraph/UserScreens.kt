@@ -1,4 +1,4 @@
-package com.example.volunteerconnectjetpackcompose.ui.theme.navigation.UserNavGraph
+package com.mobile.volunteerconnect.navigation.UserNavGraph
 
 enum class UserScreens {
 

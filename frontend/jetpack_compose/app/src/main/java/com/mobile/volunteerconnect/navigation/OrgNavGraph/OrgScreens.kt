@@ -4,8 +4,8 @@ enum class OrgScreens {
 
     CreatePost,
     Home,
-    Organization,
     UserProfile,
     ViewApplicants,
+    ApplicantProfile,
 
 }

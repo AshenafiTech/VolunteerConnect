@@ -1,5 +1,6 @@
 package com.mobile.volunteerconnect.view.pages.login
 
+import android.R.attr.enabled
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -10,7 +11,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -22,7 +22,6 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -58,6 +57,7 @@ fun LoginScreen(
     }
 
     Scaffold(
+
         snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { paddingValues ->
         Column(
@@ -84,7 +84,7 @@ fun LoginScreen(
                 fontWeight = MaterialTheme.typography.headlineSmall.fontWeight,
                 style = MaterialTheme.typography.headlineSmall,
 
-                color = Color.Black,    
+                color = Color.Black,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth()
             )
@@ -137,12 +137,12 @@ fun LoginScreen(
 
             // Login Button
             Button(
-                onClick = viewModel::login,
+                onClick = {viewModel.login()},
                 modifier = Modifier.fillMaxWidth(),
                 enabled = !uiState.isLoading,
-                
+
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF3597DA)),
-                
+
                 shape = MaterialTheme.shapes.small
             ) {
                 if (uiState.isLoading) {

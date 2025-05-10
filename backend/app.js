@@ -5,6 +5,8 @@ const path = require('path');
 const app = express();
 const port = process.env.PORT || 5500;
 const cors = require("cors");
+app.use('/public', express.static(path.join(__dirname, 'src', 'public')));
+
 app.use(express.json());
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));

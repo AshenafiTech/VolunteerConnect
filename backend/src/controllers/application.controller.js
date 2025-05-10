@@ -2,7 +2,9 @@ const dbConnection = require("../config/db");
 const { StatusCodes } = require("http-status-codes");
 const jwt = require("jsonwebtoken");
 const { v4: uuidv4 } = require("uuid");
-const { get } = require("../routes/application.route");
+const {getBase64ImageFromUrl} = require("../utils/serveImage");
+const db = require("../config/db");
+
 
 async function createEvent(req, res) {
   const authHeader = req.headers.authorization;
@@ -23,11 +25,17 @@ async function createEvent(req, res) {
       return res.status(StatusCodes.FORBIDDEN).json({ message: "Only organizations can create events" });
     }
 
-    const { 
-      title, subtitle, category, date, time, location,
-      spotsLeft, image, description, requirements,
-      additionalInfo, contactPhone, contactEmail, contactTelegram
-    } = req.body;
+  
+
+const { 
+  title, subtitle, category, date, time, location,
+  spotsLeft, description, requirements,
+  additionalInfo, contactPhone, contactEmail, contactTelegram
+} = req.body;
+console.log(req.body)
+
+const image = req.file ? `/images/${req.file.filename}` : null;
+
 
     if (!title || !date || !time || !location) {
       return res.status(StatusCodes.BAD_REQUEST).json({ 
@@ -56,7 +64,7 @@ async function createEvent(req, res) {
       "SELECT * FROM events WHERE uuid = ?", 
       [uuid]
     );
-
+    console.log("Event Created Successfully")
     return res.status(StatusCodes.CREATED).json({
       message: "Event created successfully",
       event: {
@@ -113,11 +121,13 @@ async function updateEvent(req, res) {
       });
     }
 
-    const {
-      title, subtitle, category, date, time, location,
-      spotsLeft, image, description, requirements,
-      additionalInfo, contactPhone, contactEmail, contactTelegram
-    } = req.body;
+    const { 
+  title, subtitle, category, date, time, location,
+  spotsLeft, description, requirements,
+  additionalInfo, contactPhone, contactEmail, contactTelegram
+} = req.body;
+
+const image = req.file ? `/images/${req.file.filename}` : null;
 
     const parsedRequirements = requirements ? JSON.stringify(requirements) : null;
     const parsedAdditionalInfo = additionalInfo ? JSON.stringify(additionalInfo) : null;
@@ -231,55 +241,108 @@ async function deleteEvent(req, res) {
 }
 
 async function getEventById(req, res) {
-  const { eventId } = req.params;
+
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return res.status(StatusCodes.UNAUTHORIZED).json({ message: "Authorization required" });
+  }
+
+  const token = authHeader.split(" ")[1];
 
   try {
-    const [event] = await dbConnection.query(
-      "SELECT * FROM events WHERE id = ?", 
-      [eventId]
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const userId = decoded.userid;
+    const userRole = decoded.role;
+
+    const { id } = req.params;
+
+    const [application] = await dbConnection.query(
+      "SELECT * FROM  events WHERE id = ?", 
+      [id]
     );
 
-    if (!event || event.length === 0) {
-      return res.status(StatusCodes.NOT_FOUND).json({ message: "Event not found" });
+    if (!application.length) {
+      return res.status(StatusCodes.NOT_FOUND).json({ message: "Application not found" });
     }
 
+    const applicationData = application[0];
+
+
+
+    let base64Image = null;
+    const baseURL = 'http://localhost:5500/public'; 
+    if (applicationData.image) {
+      base64Image = await getBase64ImageFromUrl(`${baseURL + applicationData.image}`);
+      
+    }
+
+    const requirements = applicationData.requirements ? JSON.parse(applicationData.requirements) : null;
+    const additionalInfo = applicationData.additionalInfo ? JSON.parse(applicationData.additionalInfo) : null;
+
     return res.status(StatusCodes.OK).json({
-      event: {
-        ...event[0],
-        requirements: event[0].requirements ? JSON.parse(event[0].requirements) : null,
-        additionalInfo: event[0].additionalInfo ? JSON.parse(event[0].additionalInfo) : null
-      }
+      id: applicationData.id,
+      title: applicationData.title,
+      subtitle: applicationData.subtitle,
+      category: applicationData.category,
+      date: applicationData.date,
+      time: applicationData.time,
+      location: applicationData.location,
+      spotsLeft: applicationData.spotsLeft,
+      image: base64Image, // Send Base64 image
+      description: applicationData.description,
+      requirements,
+      additionalInfo,
+      contactPhone: applicationData.contactPhone,
+      contactEmail: applicationData.contactEmail,
+      contactTelegram: applicationData.contactTelegram
     });
 
   } catch (error) {
-    console.error("Get Event Error:", error.message);
-    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ 
-      message: "Failed to retrieve event" 
-    });
+    console.error("Get Application Error:", error.message);
+
+    if (error instanceof jwt.JsonWebTokenError) {
+      return res.status(StatusCodes.UNAUTHORIZED).json({ message: "Invalid token" });
+    }
+
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Failed to retrieve application" });
   }
 }
 
+
 async function getAllEvents(req, res) {
-    try {
-        const [events] = await dbConnection.query("SELECT * FROM events");
-    
-        const parsedEvents = events.map(event => ({
+  console.log("get all events");
+  try {
+    const [events] = await dbConnection.query("SELECT * FROM events");
+
+    const baseURL = "http://localhost:5500/public";
+
+    const parsedEvents = await Promise.all(events.map(async (event) => {
+      const imagePath = event.image ? `${baseURL}${event.image}` : null;
+
+      let base64Image = null;
+      if (imagePath) {
+        console.log("retrieving image from:", imagePath);
+        base64Image = await getBase64ImageFromUrl(imagePath);
+      }
+
+      return {
         ...event,
         requirements: event.requirements ? JSON.parse(event.requirements) : null,
-        additionalInfo: event.additionalInfo ? JSON.parse(event.additionalInfo) : null
-        }));
-    
-        return res.status(StatusCodes.OK).json({ events: parsedEvents });
-    
-    } catch (error) {
-        console.error("Get All Events Error:", error.message);
-        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ 
-        message: "Failed to retrieve events" 
-        });
-    }
-    }
+        additionalInfo: event.additionalInfo ? JSON.parse(event.additionalInfo) : null,
+        image: base64Image, // Base64 encoded image
+      };
+    }));
 
+    return res.status(StatusCodes.OK).json({ events: parsedEvents });
 
+  } catch (error) {
+    console.error("Get All Events Error:", error.message);
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ 
+      message: "Failed to retrieve events" 
+    });
+  }
+}
 async function getOrganizationEvents(req, res) {
   const authHeader = req.headers.authorization;
   
@@ -609,9 +672,118 @@ async function getUserEventApplications(req, res) {
   }
 }
 
+const getTokenData = (req) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader?.startsWith('Bearer ')) return null;
+  const token = authHeader.split(' ')[1];
+  try {
+    return jwt.verify(token, process.env.JWT_SECRET);
+  } catch {
+    return null;
+  }
+};
+
+const deleteApplication = async (req, res) => {
+
+  const tokenData = getTokenData(req);
+  console.log("Token data:", tokenData); // Debug
+
+  // Only allow users (not organizations)
+  if (tokenData?.role === "organization") {
+    return res.status(403).json({ message: 'Only users can delete applications.' });
+  }
+
+  const applicationId = req.params.id;
+
+  if (!applicationId) {
+    return res.status(400).json({ message: 'Application ID is required.' });
+  }
+
+  try {
+    console.log(`Trying to delete application ID ${applicationId} for user ID ${tokenData.userid}`);
+
+    const [result] = await dbConnection.execute(
+      'DELETE FROM applications WHERE id = ? AND user_id = ?',
+      [applicationId, tokenData.userid]
+    );
+
+    console.log("Delete result:", result);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Application not found or not owned by user.' });
+    }
+
+    return res.status(200).json({ message: 'Application deleted successfully.' });
+
+  } catch (error) {
+    console.error("Delete error:", error); // ✅ This will now show the real issue
+    return res.status(500).json({
+      message: 'Error deleting application',
+      error: error.message || error.toString(),
+    });
+  }
+};
+
+const approveApplication = async (req, res) => {
+
+  const tokenData = getTokenData(req);
+  if (!tokenData?.role == "volunteer") {
+    return res.status(403).json({ message: 'Only organizations can approve applications.' });
+  }
+
+  const applicationId = req.params.id;
+
+  try {
+    const [check] = await dbConnection.execute(
+      'SELECT * FROM applications WHERE id = ? AND organization = ?',
+      [applicationId, tokenData.name]
+    );
+
+    if (check.length === 0) {
+      return res.status(404).json({ message: 'Application not found or not associated with your organization.' });
+    }
+
+    await dbConnection.execute(
+      'UPDATE applications SET status = ? WHERE id = ?',
+      ['Approved', applicationId]
+    );
+
+    res.status(200).json({ message: 'Application approved.' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error approving application', error });
+  }
+};
 
 
+const rejectApplication = async (req, res) => {
+  
+  const tokenData = getTokenData(req);
+  if (!tokenData?.role == "volunteer") {
+    return res.status(403).json({ message: 'Only organizations can approve applications.' });
+  }
 
+  const applicationId = req.params.id;
+
+  try {
+    const [check] = await dbConnection.execute(
+      'SELECT * FROM applications WHERE id = ? AND organization = ?',
+      [applicationId, tokenData.name]
+    );
+
+    if (check.length === 0) {
+      return res.status(404).json({ message: 'Application not found or not associated with your organization.' });
+    }
+
+    await dbConnection.execute(
+      'UPDATE applications SET status = ? WHERE id = ?',
+      ['Canceled', applicationId]
+    );
+
+    res.status(200).json({ message: 'Application approved.' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error approving application', error });
+  }
+};
 
 module.exports = {
     createEvent,
@@ -622,5 +794,8 @@ module.exports = {
     getOrganizationEvents,
     applyForEvent,
     getUserEventApplications,
-    getEventApplicants
+    getEventApplicants,
+    deleteApplication,
+    approveApplication,
+    rejectApplication
     };

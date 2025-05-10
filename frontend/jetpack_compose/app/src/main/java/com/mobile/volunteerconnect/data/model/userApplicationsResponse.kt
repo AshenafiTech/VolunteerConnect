@@ -8,6 +8,6 @@ data class userApplicationsResponse(
     val id: String = "",
     val status: String = "",
     val subtitle: String = "",
-    val time: String = "",
+    val time: String? = null,
     val title: String = ""
 )

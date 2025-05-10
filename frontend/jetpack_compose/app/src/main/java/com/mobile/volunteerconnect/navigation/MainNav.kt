@@ -7,9 +7,9 @@ import com.mobile.volunteerconnect.navigation.OrgNavGraph.OrgNavigation
 import com.mobile.volunteerconnect.navigation.UserNavGraph.UserNavigation
 
 @Composable
-fun MainNav(userRole: UserRole){
-    when(userRole){
-        UserRole.RegularUser -> UserNavigation()
-        UserRole.Organization -> OrgNavigation()
+fun MainNav(userRole: UserRole) {
+    when(userRole) {
+        UserRole.Volunteer -> UserNavigation() // Navigate to Volunteer screens
+        UserRole.Organization -> OrgNavigation() // Navigate to Organization screens
     }
 }

@@ -144,7 +144,7 @@ async function login(req, res) {
 async function checkUser(req, res) {
   const name = req.user.name;
   const userid = req.user.userid;
-  res.status(StatusCodes.OK).json({ message: "valid user", name, userid });
+  res.status(StatusCodes.OK).json({ message: "valid user", name, userid, success: true });
 }
 
 module.exports = {

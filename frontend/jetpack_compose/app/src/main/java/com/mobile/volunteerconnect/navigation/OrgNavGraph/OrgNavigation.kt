@@ -14,10 +14,12 @@ import androidx.navigation.compose.*
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.mobile.volunteerconnect.R
-import com.mobile.volunteerconnect.view.pages.organization.screens.CreatePost
-import com.mobile.volunteerconnect.view.pages.organization.screens.Home
-import com.mobile.volunteerconnect.view.pages.organization.screens.UserProfile
-import com.mobile.volunteerconnect.view.pages.organization.screens.ViewApplicants
+import com.mobile.volunteerconnect.view.organization.screens.ApplicantProfile
+import com.mobile.volunteerconnect.view.organization.screens.CreatePost
+import com.mobile.volunteerconnect.view.organization.screens.Home
+import com.mobile.volunteerconnect.view.organization.screens.UserProfile
+import com.mobile.volunteerconnect.view.organization.screens.ViewApplicants
+import com.mobile.volunteerconnect.view.pages.createpost.CreatePostScreen
 
 data class OrgNavItem(
     val label: String,
@@ -95,9 +97,19 @@ fun OrgNavigation() {
             modifier = Modifier.padding(paddingValues)
         ) {
             composable(OrgScreens.Home.name) { Home() }
-            composable(OrgScreens.CreatePost.name) { CreatePost() }
-            composable(OrgScreens.ViewApplicants.name) { ViewApplicants() }
+            composable(OrgScreens.CreatePost.name) { CreatePostScreen(navController) }
+            composable(OrgScreens.ViewApplicants.name) { ViewApplicants(navController) }
+//            composable(OrgScreens.ViewApplicants.name) { ViewApplicants() }
             composable(OrgScreens.UserProfile.name) { UserProfile() }
+            composable("ApplicantProfile/{userId}") { backStackEntry ->
+                val userId = backStackEntry.arguments?.getString("userId")
+                userId?.let {
+//                    ApplicantProfile(navController = navController, userId = it)
+                    ApplicantProfile()
+                }
+            }
+
+
         }
     }
 }

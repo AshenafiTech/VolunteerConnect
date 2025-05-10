@@ -23,12 +23,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.mobile.volunteerconnect.R
+import com.mobile.volunteerconnect.view.pages.signup.SignupViewModel
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SignupScreen(
-    onSignupSuccess: () -> Unit,
+    onSignupSuccess: () -> Unit,  // No parameters here
     onLoginClick: () -> Unit,
     viewModel: SignupViewModel = hiltViewModel()
 ) {
@@ -38,7 +39,7 @@ fun SignupScreen(
     // Handle success
     LaunchedEffect(uiState.isSuccess) {
         if (uiState.isSuccess) {
-            onSignupSuccess()
+            onSignupSuccess() // Trigger the callback with no parameters
         }
     }
 
@@ -81,8 +82,6 @@ fun SignupScreen(
             color = Color.Gray,
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth()
-
-
         )
 
         Spacer(Modifier.height(32.dp))
@@ -147,7 +146,6 @@ fun SignupScreen(
                     modifier = Modifier.padding(start = 8.dp)
                 )
             }
-
 
             Row(verticalAlignment = Alignment.CenterVertically) {
                 RadioButton(

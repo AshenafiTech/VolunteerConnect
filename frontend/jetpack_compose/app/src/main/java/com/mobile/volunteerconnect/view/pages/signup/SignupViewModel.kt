@@ -49,8 +49,8 @@ class SignupViewModel @Inject constructor(
                 uiState = uiState.copy(
                     isLoading = false,
                     isSuccess = true,
-                    token = response.token,
-                    user = response.user
+                    token = response.body()?.token,
+                    user = response.body()?.user
                 )
             } catch (e: Exception) {
                 uiState = uiState.copy(
