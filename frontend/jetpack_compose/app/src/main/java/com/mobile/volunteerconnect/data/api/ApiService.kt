@@ -1,6 +1,7 @@
 package com.mobile.volunteerconnect.data.api
 
 import com.mobile.volunteerconnect.data.model.CreateEventRequest
+import com.mobile.volunteerconnect.data.model.EventResponse
 import com.mobile.volunteerconnect.data.model.LoginRequest
 import com.mobile.volunteerconnect.data.model.LoginResponse
 import com.mobile.volunteerconnect.data.model.SignupRequest
@@ -22,4 +23,7 @@ interface ApiService {
 
     @GET("/api/checkUser")
     suspend fun checkUser(@Header("Authorization") token: String): Response<Unit>
+
+    @GET("api/events/org")
+    suspend fun getOrgEvents(): EventResponse
 }
