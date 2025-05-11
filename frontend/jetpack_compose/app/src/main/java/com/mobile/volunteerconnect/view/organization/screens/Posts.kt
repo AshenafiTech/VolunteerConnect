@@ -4,7 +4,14 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AddCircle
+import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Place
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -12,28 +19,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
+import com.mobile.volunteerconnect.R
 import com.mobile.volunteerconnect.data.model.EventItem
+import com.mobile.volunteerconnect.navigation.OrgNavGraph.OrgScreens
 import com.mobile.volunteerconnect.view.components.TopBarComponent
 import com.mobile.volunteerconnect.viewModel.OrgSpecificEventsViewModel
 import kotlin.random.Random
-import com.mobile.volunteerconnect.R
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AddCircle
-import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Place
-import androidx.compose.material.icons.filled.Search
-
 
 @Composable
 fun Posts(
-    viewModel: OrgSpecificEventsViewModel = hiltViewModel()
+    viewModel: OrgSpecificEventsViewModel = hiltViewModel(),
+    navController: NavController // Add NavController as parameter
 ) {
     val events by viewModel.events.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
@@ -42,7 +41,7 @@ fun Posts(
     var selectedCategory by remember { mutableStateOf("All") }
 
     LaunchedEffect(Unit) {
-        viewModel.fetchOrgEvents()
+        viewModel.fetchOrgEvents()  // Fetching events when the composable is first launched
     }
 
     Surface(
@@ -52,39 +51,38 @@ fun Posts(
         Column(modifier = Modifier.fillMaxSize()) {
             TopBarComponent("Posts")
 
+            // Simple Search Bar
             SimpleBar(
                 searchQuery = searchQuery,
                 onQueryChange = {
                     searchQuery = it
-                    viewModel.onSearchQueryChanged(it)
+                    viewModel.onSearchQueryChanged(it) // Update the search query in the ViewModel
                 }
             )
 
+            // Category Filter Chips
+            val categories = listOf("All", "Environment", "Education", "Food", "Senior", "Health", "Animals")
             LazyRow(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier
-                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
             ) {
-                val categories = listOf("All", "Environment", "Education", "Food", "Senior", "Health", "Animals")
-
-                items(categories.size) { index ->
-                    val category = categories[index]
+                items(categories) { category ->
                     FilterChip(
                         label = category,
                         selected = selectedCategory == category,
                         onClick = {
                             selectedCategory = category
-                            viewModel.onCategorySelected(category)
+                            viewModel.onCategorySelected(category) // Apply selected category filter
                         }
                     )
                 }
             }
 
-
+            // Box to handle loading, errors, or displaying events
             Box(modifier = Modifier.fillMaxSize()) {
                 when {
                     isLoading -> {
-                        CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                        CircularProgressIndicator(modifier = Modifier.align(Alignment.Center)) // Show loading spinner
                     }
                     error != null -> {
                         Text(
@@ -93,8 +91,21 @@ fun Posts(
                             modifier = Modifier.align(Alignment.Center)
                         )
                     }
+                    events.isEmpty() -> {
+                        Text(
+                            text = "No events found.",
+                            color = Color.Gray,
+                            modifier = Modifier.align(Alignment.Center)
+                        )
+                    }
                     else -> {
-                        EventList(events)
+                        EventList(
+                            events = events,
+                            onViewApplicantsClick = { eventId ->
+                                // Navigate to the ViewApplicants screen with eventId
+                                navController.navigate("view_applicants/$eventId")
+                            }
+                        )
                     }
                 }
             }
@@ -103,28 +114,27 @@ fun Posts(
 }
 
 
-
 @Composable
-fun EventList(events: List<EventItem>) {
+fun EventList(events: List<EventItem>, onViewApplicantsClick: (Int) -> Unit) {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = 16.dp)
     ) {
         items(events, key = { it.id }) { event ->
-            EventCards(event)
+            EventCards(event = event, onViewApplicantsClick = onViewApplicantsClick)
         }
     }
 }
 
+
 @Composable
-fun EventCards(event: EventItem) {
+fun EventCards(event: EventItem, onViewApplicantsClick: (Int) -> Unit) {
     val images = listOf(
         R.drawable.event_five,
         R.drawable.event_six,
         R.drawable.event_four
     )
-
     val randomImage = images[Random.nextInt(images.size)]
 
     Card(
@@ -140,7 +150,6 @@ fun EventCards(event: EventItem) {
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
-            // Image
             Image(
                 painter = painterResource(id = randomImage),
                 contentDescription = event.title,
@@ -151,14 +160,12 @@ fun EventCards(event: EventItem) {
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Title
             Text(
                 text = event.title,
                 style = MaterialTheme.typography.titleLarge,
                 color = Color(0xFF3598db)
             )
 
-            // Subtitle
             Text(
                 text = event.subtitle,
                 style = MaterialTheme.typography.bodyMedium,
@@ -168,69 +175,8 @@ fun EventCards(event: EventItem) {
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Date and Time
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        imageVector = Icons.Default.DateRange,
-                        contentDescription = "Date",
-                        modifier = Modifier.size(20.dp)
-                    )
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(text = event.date, style = MaterialTheme.typography.bodySmall)
-                }
-
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        imageVector = Icons.Default.AddCircle,
-                        contentDescription = "Time",
-                        modifier = Modifier.size(20.dp)
-                    )
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(
-                        text = event.time ?: "09:00 - 12:00",
-                        style = MaterialTheme.typography.bodySmall
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // Location
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    imageVector = Icons.Default.Place,
-                    contentDescription = "Location",
-                    modifier = Modifier.size(20.dp)
-                )
-                Spacer(modifier = Modifier.width(4.dp))
-                Text(text = event.location, style = MaterialTheme.typography.bodySmall)
-            }
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // Available Spots
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    imageVector = Icons.Default.Person,
-                    contentDescription = "Available Spots",
-                    modifier = Modifier.size(20.dp)
-                )
-                Spacer(modifier = Modifier.width(4.dp))
-                Text(
-                    text = "Available Spots: ${event.spotsLeft}",
-                    style = MaterialTheme.typography.bodySmall
-                )
-            }
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            // View Applicants Button
             Button(
-                onClick = { /* Handle action */ },
+                onClick = { onViewApplicantsClick(event.id) },
                 modifier = Modifier
                     .widthIn(min = 140.dp)
                     .align(Alignment.CenterHorizontally),
@@ -240,10 +186,10 @@ fun EventCards(event: EventItem) {
             ) {
                 Text("View Applicants", color = Color.White, style = MaterialTheme.typography.labelLarge)
             }
-
         }
     }
 }
+
 
 @Composable
 fun FilterChip(label: String, selected: Boolean, onClick: () -> Unit) {
@@ -259,7 +205,6 @@ fun FilterChip(label: String, selected: Boolean, onClick: () -> Unit) {
         )
     )
 }
-
 
 @Composable
 fun SimpleBar(
@@ -285,11 +230,7 @@ fun SimpleBar(
             focusedContainerColor = Color.White
         ),
         leadingIcon = {
-            Icon(
-                imageVector = Icons.Default.Search,
-                contentDescription = "Search Icon",
-                tint = Color.Gray
-            )
+            Icon(Icons.Default.Search, contentDescription = "Search Icon", tint = Color.Gray)
         }
     )
 }

@@ -27,7 +27,7 @@ import androidx.navigation.NavController
 import com.mobile.volunteerconnect.data.model.ApplicantItem
 
 @Composable
-fun ApplicantRow(applicant: ApplicantItem, navController: NavController) {
+fun ApplicantRow(applicant: ApplicantItem, onViewClick: (() -> Unit)? = null) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -53,11 +53,7 @@ fun ApplicantRow(applicant: ApplicantItem, navController: NavController) {
 
         // View Application button
         Button(
-            onClick = {
-//                navController.navigate("ApplicantProfile")
-//                navController.navigate("ApplicantProfile/${applicant.user_id}")
-
-            },
+            onClick = { onViewClick?.invoke() },
             contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
             modifier = Modifier
                 .padding(start = 8.dp)
