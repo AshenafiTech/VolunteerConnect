@@ -1,7 +1,7 @@
-package com.mobile.volunteerconnect.view.pages.Profile
+package com.mobile.volunteerconnect.view.pages.profile
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxScope.align
+//import androidx.compose.foundation.layout.BoxScope.align
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize

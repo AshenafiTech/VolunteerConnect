@@ -1,4 +1,4 @@
-package com.mobile.volunteerconnect.view.pages.Profile
+package com.mobile.volunteerconnect.view.pages.profile
 
 import com.mobile.volunteerconnect.data.model.ProfileUser
 

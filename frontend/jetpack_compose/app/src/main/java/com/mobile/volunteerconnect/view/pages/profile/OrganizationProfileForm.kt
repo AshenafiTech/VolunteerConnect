@@ -1,4 +1,4 @@
-package com.mobile.volunteerconnect.view.pages.Profile
+package com.mobile.volunteerconnect.view.pages.profile
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer

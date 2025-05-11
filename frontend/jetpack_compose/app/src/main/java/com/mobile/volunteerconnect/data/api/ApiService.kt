@@ -1,10 +1,13 @@
 package com.mobile.volunteerconnect.data.api
 
 import com.mobile.volunteerconnect.data.model.CreateEventRequest
+import com.mobile.volunteerconnect.data.model.DeleteUserProfileResponse
 import com.mobile.volunteerconnect.data.model.LoginRequest
 import com.mobile.volunteerconnect.data.model.LoginResponse
 import com.mobile.volunteerconnect.data.model.SignupRequest
 import com.mobile.volunteerconnect.data.model.SignupResponse
+import com.mobile.volunteerconnect.data.model.UserProfileRequest
+import com.mobile.volunteerconnect.data.model.UserProfileResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Response
@@ -22,7 +25,6 @@ interface ApiService {
 
     @GET("/api/checkUser")
     suspend fun checkUser(@Header("Authorization") token: String): Response<Unit>
-
 
     @GET("api/users/{id}/profile")
     suspend fun getUserProfile(

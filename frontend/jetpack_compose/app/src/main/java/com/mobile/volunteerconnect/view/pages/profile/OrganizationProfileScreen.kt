@@ -1,9 +1,8 @@
-package com.mobile.volunteerconnect.view.pages.Profile
+package com.mobile.volunteerconnect.view.pages.profile
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.layout.BoxScope.align
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -19,8 +18,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Email
@@ -28,30 +28,25 @@ import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.ui.text.input.KeyboardType
-import com.mobile.volunteerconnect.data.model.ProfileUser
-
-
-// Add these imports at the top
-import com.mobile.volunteerconnect.view.pages.profile.components.ProfileHead
-import com.mobile.volunteerconnect.view.pages.profile.components.InfoRow
-import com.mobile.volunteerconnect.view.pages.profile.components.SkillChip
-import com.mobile.volunteerconnect.view.pages.profile.components.StatItem
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import kotlin.collections.forEach
-import kotlin.run
+import com.mobile.volunteerconnect.data.model.ProfileUser
 
-@OptIn(ExperimentalLayoutApi::class)
+// Add these imports at the top
+import com.mobile.volunteerconnect.view.pages.profile.components.InfoRow
+import com.mobile.volunteerconnect.view.pages.profile.components.SkillChip
+import com.mobile.volunteerconnect.view.pages.profile.components.StatItem
+import kotlin.collections.forEach
+import kotlin.collections.isNullOrEmpty
+
+//@OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun ProfileScreen(
+fun OrganizationProfileScreen(
     viewModel: ProfileViewModel,
     onEditClick: () -> Unit,
     onDeleted: () -> Unit,
-    onLogout: () -> Unit
+    onLogout:()-> Unit
 ) {
     // Call loadUserProfile when the screen first loads
     LaunchedEffect(Unit) {
@@ -65,12 +60,11 @@ fun ProfileScreen(
             FloatingActionButton(
                 onClick = onEditClick,
                 containerColor = Color(0xFF3597DA)
-
             ) {
                 Icon(
                     imageVector = Icons.Default.Edit,
                     contentDescription = "Edit Profile",
-                    tint = Color.White,
+                    tint = Color.White
                 )
             }
         }
@@ -88,7 +82,7 @@ fun ProfileScreen(
                 }
 
                 uiState.user != null -> {
-                    ProfileContent(
+                    OrganizationProfileContent(
                         user = uiState.user,
                         deleteState = viewModel.deleteState.collectAsState().value,
                         onDeleteClicked = { viewModel.deleteUserProfile() },
@@ -97,7 +91,6 @@ fun ProfileScreen(
                             .fillMaxSize()
                             .padding(16.dp),
                         onLogout = onLogout
-
                     )
                 }
 
@@ -113,28 +106,25 @@ fun ProfileScreen(
     }
 }
 @Composable
-private fun ProfileContent(
+fun OrganizationProfileContent(
     user: ProfileUser,
     deleteState: ProfileViewModel.DeleteState,
     onDeleteClicked: () -> Unit,  // Fixed parameter definition
     modifier: Modifier = Modifier,
-    onDeleted: () -> Unit,  // Added properly
+    onDeleted: () -> Unit , // Added properly
     onLogout: () -> Unit
 ) {
-    Column(
-        modifier = modifier.verticalScroll(rememberScrollState())
-    ) {
-        ProfileHead(user.name ?: "")
+    Column(modifier = modifier.verticalScroll(rememberScrollState())) {
+        ProfileHead2(user.name ?: "Organization Name")
         Spacer(modifier = Modifier.height(24.dp))
-        PersonalInfoCard(
+        OrganizationInfoCard(
             user = user,
             deleteState = deleteState,
             onDeleteClicked = onDeleteClicked,
             onDeleted = onDeleted
         )
         Spacer(modifier = Modifier.height(24.dp))
-        VolunteerStatsCard(user)
-
+        OrgStatsCard(user)
         //logut button
         Button(
             onClick = onLogout,
@@ -144,15 +134,53 @@ private fun ProfileContent(
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color(0xFF3597DA)
             )
-
         ) {
             Text("Log Out")
         }
 
     }
 }
+
 @Composable
-fun PersonalInfoCard(
+fun ProfileHead2(name: String) {
+    Surface(
+        tonalElevation = 4.dp,       // for Material3 “surface” elevation
+        shadowElevation = 4.dp,      // if you need the legacy shadow API
+        shape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.fillMaxWidth().padding(16.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Default.AccountCircle,
+                contentDescription = "Profile Picture",
+                tint = Color(0xFF3597DA),
+                modifier = Modifier
+                    .size(100.dp)
+                    .border(2.dp, Color(0xFF3597DA), CircleShape)
+            )
+            Text(
+                text = name,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(top = 8.dp)
+            )
+            Text(
+                text = "Organization",
+                fontSize = 14.sp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+    }
+
+}
+
+
+@Composable
+fun OrganizationInfoCard(
     user: ProfileUser,
     deleteState: ProfileViewModel.DeleteState,
     onDeleteClicked: () -> Unit,
@@ -230,32 +258,33 @@ fun PersonalInfoCard(
 
                 else -> {}
             }
-
             Spacer(modifier = Modifier.height(8.dp))
             InfoRow(Icons.Default.Email, user.email ?: "Not available")
-            InfoRow(Icons.Default.LocationOn, user.city ?: "City not available")
+            InfoRow(Icons.Default.LocationOn, user.city ?: "Location not available")
             InfoRow(Icons.Default.Phone, user.phone ?: "Phone not available")
             Spacer(modifier = Modifier.height(8.dp))
-            Text("Bio", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
             Text(
-                user.bio ?: "No bio provided",
+                "About Us",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold
+            )
+            Text(
+                user.bio ?: "Organization bio not available.",
                 fontSize = 14.sp,
                 modifier = Modifier.padding(top = 4.dp)
             )
         }
     }
 }
-
-
 @Composable
-fun VolunteerStatsCard(user: ProfileUser) {
+fun OrgStatsCard(user: ProfileUser) {
     ElevatedCard(
         shape = androidx.compose.foundation.shape.RoundedCornerShape(16.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
-                "Volunteer Stats",
+                "Stats",
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold
             )
@@ -268,62 +297,27 @@ fun VolunteerStatsCard(user: ProfileUser) {
                 StatItem(
                     icon = Icons.Default.CalendarToday,
                     value = user.attendedEvents?.toString() ?: "0",
-                    label = "Events Attended"
-                )
-                StatItem(
-                    icon = Icons.Default.AccessTime,
-                    value = user.hoursVolunteered?.toString() ?: "0",
-                    label = "Hours Volunteered"
+                    label = "Events"
                 )
             }
             Spacer(modifier = Modifier.height(16.dp))
-            SkillsAndInterestsSection(user)
+            OrgDomainsSection(user)
         }
     }
 }
-
-@Composable
-fun EditableTextField(
-    label: String,
-    value: String,
-    keyboardType: KeyboardType = KeyboardType.Text,
-    modifier: Modifier = Modifier,  // Add modifier parameter
-    singleLine: Boolean = true,
-    onValueChange: (String) -> Unit
-) {
-    OutlinedTextField(
-        value = value,
-        onValueChange = onValueChange,
-        label = { Text(label) },
-        keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
-        modifier = modifier.fillMaxWidth(),  // Apply the modifier
-        singleLine = singleLine,
-        shape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp)
-    )
-}
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun SkillsAndInterestsSection(user: ProfileUser) {
+fun OrgDomainsSection(user: ProfileUser) {
     Column {
-        Text("Skills", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+        Text("Domains", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
         FlowRow(modifier = Modifier.padding(top = 8.dp)) {
-            user.skills?.forEach { skill ->
-                SkillChip(skill)
-            } ?: run {
-                SkillChip("Add a skill")
-            }
-        }
-        Spacer(modifier = Modifier.height(16.dp))
-        Text(
-            "Interests",
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold
-        )
-        FlowRow(modifier = Modifier.padding(top = 8.dp)) {
-            user.interests?.forEach { interest ->
-                SkillChip(interest)
-            } ?: run {
-                SkillChip("Add an interest")
+            val domains = user.interests
+            if (domains.isNullOrEmpty()) {
+                SkillChip("Add a domain")
+            } else {
+                domains.forEach { domain ->
+                    SkillChip(domain)
+                }
             }
         }
     }

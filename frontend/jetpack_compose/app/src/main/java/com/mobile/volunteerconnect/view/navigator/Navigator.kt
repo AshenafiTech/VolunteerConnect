@@ -32,6 +32,9 @@ sealed class Screen(val route: String) {
     object Home : Screen("home")
     object Profile : Screen("profile")
     object CreatePost : Screen("createPost")
+    object OrganizationProfile : Screen("organizationProfile")
+    object EditProfile : Screen("editProfile")
+    object EditOrganizationProfile : Screen("editOrganizationProfile")
 }
 
 @Composable
