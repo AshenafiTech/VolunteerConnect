@@ -59,7 +59,6 @@ fun Posts(
                 }
             )
 
-            // Category Filter Chips
             val categories = listOf("All", "Environment", "Education", "Food", "Senior", "Health", "Animals")
             LazyRow(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
