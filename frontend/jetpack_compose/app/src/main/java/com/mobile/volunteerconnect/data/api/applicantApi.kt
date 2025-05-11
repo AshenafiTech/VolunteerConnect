@@ -2,9 +2,11 @@ package com.mobile.volunteerconnect.data.api
 
 import com.mobile.volunteerconnect.data.model.ApplicantItem
 import retrofit2.http.GET
+import retrofit2.http.Path
 
 interface applicantApi {
 
-    @GET(ApiConstants.APPLICANTS_ENDPOINT)
-    suspend fun getApplicants(): List<ApplicantItem>
+    @GET("/api/event/{eventId}/applicants")
+    suspend fun getApplicantsByEvent(@Path("eventId") eventId: Int): List<ApplicantItem>
+
 }

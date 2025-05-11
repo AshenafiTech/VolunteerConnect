@@ -6,6 +6,7 @@ import com.mobile.volunteerconnect.data.model.LoginRequest
 import com.mobile.volunteerconnect.data.model.LoginResponse
 import com.mobile.volunteerconnect.data.model.SignupRequest
 import com.mobile.volunteerconnect.data.model.SignupResponse
+import com.mobile.volunteerconnect.data.model.UserProfileResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Response
@@ -27,9 +28,33 @@ interface ApiService {
     @GET("/api/events")
     suspend fun getOrgEvents(): EventResponse
 
+    @GET("/api/events/org")
+    suspend fun getEventsForOrg(): Response<EventResponse>
+
+
     @DELETE("api/applications/{eventId}")
     suspend fun deleteApplication(
         @Header("Authorization") token: String,
         @Path("eventId") eventId: String
+    ): Response<Unit>
+
+
+    @GET("api/users/{userId}/profile")
+    suspend fun getUserProfile(
+        @Path("userId") userId: Int,
+        @Header("Authorization") token: String
+    ): Response<UserProfileResponse>
+
+
+    @PATCH("applications/{id}/approve")
+    suspend fun approveApplication(
+        @Path("id") applicationId: Int,
+        @Header("Authorization") token: String
+    ): Response<Unit>
+
+    @PATCH("applications/{id}/reject")
+    suspend fun rejectApplication(
+        @Path("id") applicationId: Int,
+        @Header("Authorization") token: String
     ): Response<Unit>
 }
