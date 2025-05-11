@@ -27,6 +27,10 @@ interface ApiService {
     @GET("/api/events")
     suspend fun getOrgEvents(): EventResponse
 
+    @GET("/api/events/org")
+    suspend fun getEventsForOrg(): Response<EventResponse>
+
+
     @DELETE("api/applications/{eventId}")
     suspend fun deleteApplication(
         @Header("Authorization") token: String,

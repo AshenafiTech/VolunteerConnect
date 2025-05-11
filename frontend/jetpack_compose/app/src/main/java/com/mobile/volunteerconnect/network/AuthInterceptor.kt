@@ -13,7 +13,7 @@ class AuthInterceptor @Inject constructor(
     override fun intercept(chain: Interceptor.Chain): Response {
         val requestBuilder = chain.request().newBuilder()
 
-        // Fetch token synchronously (since interceptors aren't suspend functions)
+        // Fetch token synchronously
         val token = runBlocking {
             userPreferences.getToken()
         }

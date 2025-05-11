@@ -17,7 +17,8 @@ import com.mobile.volunteerconnect.R
 import com.mobile.volunteerconnect.view.organization.screens.ApplicantProfile
 import com.mobile.volunteerconnect.view.organization.screens.CreatePost
 import com.mobile.volunteerconnect.view.organization.screens.Home
-import com.mobile.volunteerconnect.view.organization.screens.UserProfile
+import com.mobile.volunteerconnect.view.organization.screens.Organization
+import com.mobile.volunteerconnect.view.organization.screens.Posts
 import com.mobile.volunteerconnect.view.organization.screens.ViewApplicants
 import com.mobile.volunteerconnect.view.pages.createpost.CreatePostScreen
 
@@ -30,8 +31,10 @@ data class OrgNavItem(
 val orgNavItems = listOf(
     OrgNavItem("Home", R.drawable.home_icon, OrgScreens.Home.name),
     OrgNavItem("Create Post", R.drawable.createpost_icon, OrgScreens.CreatePost.name),
+    OrgNavItem("Posts", R.drawable.compass, OrgScreens.Posts.name),
     OrgNavItem("Applicants", R.drawable.myapplicationicon, OrgScreens.ViewApplicants.name),
-    OrgNavItem("Profile", R.drawable.profile_icon, OrgScreens.UserProfile.name)
+    OrgNavItem("Profile", R.drawable.profile_icon, OrgScreens.UserProfile.name),
+
 )
 
 
@@ -98,9 +101,11 @@ fun OrgNavigation() {
         ) {
             composable(OrgScreens.Home.name) { Home() }
             composable(OrgScreens.CreatePost.name) { CreatePostScreen(navController) }
+            composable(OrgScreens.Posts.name) { Posts() }
+            composable(OrgScreens.Organization.name) { Organization() }
             composable(OrgScreens.ViewApplicants.name) { ViewApplicants(navController) }
 //            composable(OrgScreens.ViewApplicants.name) { ViewApplicants() }
-            composable(OrgScreens.UserProfile.name) { UserProfile() }
+            composable(OrgScreens.UserProfile.name) { Organization() }
             composable("ApplicantProfile/{userId}") { backStackEntry ->
                 val userId = backStackEntry.arguments?.getString("userId")
                 userId?.let {
