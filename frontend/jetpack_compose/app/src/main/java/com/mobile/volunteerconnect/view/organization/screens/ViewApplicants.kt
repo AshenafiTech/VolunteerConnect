@@ -79,18 +79,18 @@ fun ViewApplicants(
                 )
             }
         } else {
-            // Display list of applicants
             LazyColumn(modifier = Modifier.padding(16.dp)) {
                 items(applicants) { applicant ->
                     ApplicantRow(
                         applicant = applicant,
                         onViewClick = {
-                            // Navigate to ApplicantProfile screen passing the userId
-                            navController.navigate("applicant_profile/${applicant.userId}")
+                            // Navigate to ApplicantProfile screen passing the userId and status
+                            navController.navigate("applicant_profile/${applicant.userId}/${applicant.status}")
                         }
                     )
                 }
             }
+
         }
     }
 }

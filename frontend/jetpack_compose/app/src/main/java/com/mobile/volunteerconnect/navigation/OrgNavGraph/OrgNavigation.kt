@@ -93,7 +93,6 @@ fun OrgNavigation() {
             composable(OrgScreens.Organization.name) { Organization() }
             composable(OrgScreens.UserProfile.name) { Organization() }
 
-            // Add the new route for ViewApplicantsScreen with eventId argument
             composable(
                 "view_applicants/{eventId}",
                 arguments = listOf(navArgument("eventId") { type = NavType.StringType })
@@ -106,16 +105,21 @@ fun OrgNavigation() {
                 }
             }
             composable(
-                "applicant_profile/{userId}",
-                arguments = listOf(navArgument("userId") { type = NavType.IntType })
+                "applicant_profile/{userId}/{status}",
+                arguments = listOf(
+                    navArgument("userId") { type = NavType.IntType },
+                    navArgument("status") { type = NavType.StringType }
+                )
             ) { backStackEntry ->
                 val userId = backStackEntry.arguments?.getInt("userId")
-                if (userId != null) {
-                    ApplicantProfile(userId = userId, navController = navController)
+                val status = backStackEntry.arguments?.getString("status")
+                if (userId != null && status != null) {
+                    ApplicantProfile(userId = userId, status = status, navController = navController)
                 } else {
-                    Log.e("Navigation", "Invalid or missing userId")
+                    Log.e("Navigation", "Invalid or missing userId or status")
                 }
             }
+
 
 
         }
