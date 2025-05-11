@@ -6,6 +6,7 @@ import retrofit2.http.Path
 
 interface applicantApi {
 
-    @GET("api/event/{event_id}/applicants")
-    suspend fun getApplicantsByEvent(@Path("event_id") eventId: Int): List<ApplicantItem>
+    @GET("/api/event/{eventId}/applicants")
+    suspend fun getApplicantsByEvent(@Path("eventId") eventId: Int): List<ApplicantItem>
+
 }

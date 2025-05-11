@@ -30,21 +30,38 @@ import androidx.compose.ui.text.TextStyle
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.mobile.volunteerconnect.data.model.ApplicantItem
+import com.mobile.volunteerconnect.viewModel.ApplicantsViewModel
+import androidx.compose.foundation.lazy.items
+import com.mobile.volunteerconnect.view.components.ApplicantRow
+import com.mobile.volunteerconnect.view.components.ApplicantsSummary
+
 
 @Composable
 fun ViewApplicants(
     eventId: String,
-    navController: NavController
+    navController: NavController,
+    viewModel: ApplicantsViewModel = hiltViewModel()
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.White)
-    ) {
+    val applicants by viewModel.applicants.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
+
+    // Trigger fetch when this screen is first composed
+    LaunchedEffect(eventId) {
+        viewModel.fetchApplicantsByEvent(eventId.toInt())
+    }
+
+    Column(modifier = Modifier.fillMaxSize()) {
+
+        // Top Bar with back button and title
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -62,23 +79,36 @@ fun ViewApplicants(
 
             Text(
                 text = "Applicants",
-                style = TextStyle(
-                    fontSize = 24.sp, // Set font size here
-                    fontWeight = FontWeight.Bold
-                ),
-                modifier = Modifier.padding(start = 8.dp),
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(start = 8.dp)
             )
         }
 
-        Spacer(modifier = Modifier.height(24.dp))
+        // Show Applicants Summary
+        ApplicantsSummary(total = applicants.size)
 
-        Text(
-            text = "Event ID: $eventId",
-            style = MaterialTheme.typography.headlineMedium,
-            color = Color(0xFF3598db),
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .padding(16.dp)
-        )
+        if (isLoading) {
+            // Show loading indicator
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator()
+            }
+        } else if (applicants.isEmpty()) {
+            // Show message if no applicants
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text(
+                    text = "No Applicants Yet",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = Color.Black
+                )
+            }
+        } else {
+            // Display list of applicants
+            LazyColumn(modifier = Modifier.padding(16.dp)) {
+                items(applicants) { applicant ->
+                    ApplicantRow(applicant = applicant)
+                }
+            }
+        }
     }
 }

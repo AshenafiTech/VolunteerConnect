@@ -27,7 +27,7 @@ import androidx.navigation.NavController
 import com.mobile.volunteerconnect.data.model.ApplicantItem
 
 @Composable
-fun ApplicantRow(applicant: ApplicantItem, onViewClick: (() -> Unit)? = null) {
+fun ApplicantRow(applicant: ApplicantItem) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -51,20 +51,5 @@ fun ApplicantRow(applicant: ApplicantItem, onViewClick: (() -> Unit)? = null) {
             )
         }
 
-        // View Application button
-        Button(
-            onClick = { onViewClick?.invoke() },
-            contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
-            modifier = Modifier
-                .padding(start = 8.dp)
-                .defaultMinSize(minHeight = 32.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF3598DB))
-        ) {
-            Text(
-                text = "View Application",
-                style = MaterialTheme.typography.labelSmall,
-                color = Color.White
-            )
-        }
     }
 }
