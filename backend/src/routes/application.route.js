@@ -36,7 +36,7 @@ router.get("/event/getallapplications",authMiddleware, getAllEvents);    // expl
 
 router.get("/event/:eventId/applicants/",authMiddleware, getEventApplicants); // get all applicants for an event
 
-router.get("/event/myApplication", getUserEventApplications) // get all applications by user
+router.get("/myevent/myApplication", getUserEventApplications) // get all applications by user
 
 router.post("/event/apply/:eventId",authMiddleware, applyForEvent) // apply for event
 

@@ -29,7 +29,7 @@ import com.mobile.volunteerconnect.view.pages.signup.SignupViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SignupScreen(
-    onSignupSuccess: () -> Unit,
+    onSignupSuccess: () -> Unit,  // No parameters here
     onLoginClick: () -> Unit,
     viewModel: SignupViewModel = hiltViewModel()
 ) {
@@ -39,7 +39,7 @@ fun SignupScreen(
     // Handle success
     LaunchedEffect(uiState.isSuccess) {
         if (uiState.isSuccess) {
-            onSignupSuccess()
+            onSignupSuccess() // Trigger the callback with no parameters
         }
     }
 
@@ -82,8 +82,6 @@ fun SignupScreen(
             color = Color.Gray,
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth()
-
-
         )
 
         Spacer(Modifier.height(32.dp))
@@ -149,7 +147,6 @@ fun SignupScreen(
                 )
             }
 
-
             Row(verticalAlignment = Alignment.CenterVertically) {
                 RadioButton(
                     selected = uiState.role == "Organization",
@@ -185,7 +182,6 @@ fun SignupScreen(
         Spacer(Modifier.height(16.dp))
 
         // Login Link
-
         TextButton(
             onClick = onLoginClick,
             modifier = Modifier.align(Alignment.CenterHorizontally)

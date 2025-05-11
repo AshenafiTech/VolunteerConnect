@@ -1,5 +1,6 @@
 package com.mobile.volunteerconnect.view.pages.login
 
+import android.R.attr.enabled
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -83,7 +84,7 @@ fun LoginScreen(
                 fontWeight = MaterialTheme.typography.headlineSmall.fontWeight,
                 style = MaterialTheme.typography.headlineSmall,
 
-                color = Color.Black,    
+                color = Color.Black,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth()
             )
@@ -136,12 +137,12 @@ fun LoginScreen(
 
             // Login Button
             Button(
-                onClick = viewModel::login,
+                onClick = {viewModel.login()},
                 modifier = Modifier.fillMaxWidth(),
                 enabled = !uiState.isLoading,
-                
+
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF3597DA)),
-                
+
                 shape = MaterialTheme.shapes.small
             ) {
                 if (uiState.isLoading) {
