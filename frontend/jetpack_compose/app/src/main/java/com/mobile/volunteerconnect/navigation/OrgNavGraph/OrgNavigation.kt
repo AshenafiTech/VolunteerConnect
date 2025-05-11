@@ -107,9 +107,9 @@ fun OrgNavigation() {
             }
             composable(
                 "applicant_profile/{userId}",
-                arguments = listOf(navArgument("userId") { type = NavType.StringType })
+                arguments = listOf(navArgument("userId") { type = NavType.IntType })
             ) { backStackEntry ->
-                val userId = backStackEntry.arguments?.getString("userId")
+                val userId = backStackEntry.arguments?.getInt("userId")
                 if (userId != null) {
                     ApplicantProfile(userId = userId, navController = navController)
                 } else {

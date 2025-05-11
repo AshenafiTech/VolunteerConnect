@@ -6,6 +6,7 @@ import com.mobile.volunteerconnect.data.model.LoginRequest
 import com.mobile.volunteerconnect.data.model.LoginResponse
 import com.mobile.volunteerconnect.data.model.SignupRequest
 import com.mobile.volunteerconnect.data.model.SignupResponse
+import com.mobile.volunteerconnect.data.model.UserProfileResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Response
@@ -36,4 +37,11 @@ interface ApiService {
         @Header("Authorization") token: String,
         @Path("eventId") eventId: String
     ): Response<Unit>
+
+
+    @GET("api/users/{userId}/profile")
+    suspend fun getUserProfile(
+        @Path("userId") userId: Int,
+        @Header("Authorization") token: String
+    ): Response<UserProfileResponse>
 }
