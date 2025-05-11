@@ -105,6 +105,19 @@ fun OrgNavigation() {
                     Log.e("Navigation", "Invalid or missing eventId")
                 }
             }
+            composable(
+                "applicant_profile/{userId}",
+                arguments = listOf(navArgument("userId") { type = NavType.StringType })
+            ) { backStackEntry ->
+                val userId = backStackEntry.arguments?.getString("userId")
+                if (userId != null) {
+                    ApplicantProfile(userId = userId, navController = navController)
+                } else {
+                    Log.e("Navigation", "Invalid or missing userId")
+                }
+            }
+
+
         }
     }
 }
