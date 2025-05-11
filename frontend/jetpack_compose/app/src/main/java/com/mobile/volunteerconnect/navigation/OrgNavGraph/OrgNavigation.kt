@@ -26,7 +26,7 @@ data class OrgNavItem(
 val orgNavItems = listOf(
     OrgNavItem("Home", R.drawable.home_icon, OrgScreens.Home.name),
     OrgNavItem("Create Post", R.drawable.createpost_icon, OrgScreens.CreatePost.name),
-    OrgNavItem("Posts", R.drawable.compass, OrgScreens.Posts.name),
+    OrgNavItem("Applications", R.drawable.myapplicationicon, OrgScreens.Posts.name),
     OrgNavItem("Profile", R.drawable.profile_icon, OrgScreens.UserProfile.name)
 )
 

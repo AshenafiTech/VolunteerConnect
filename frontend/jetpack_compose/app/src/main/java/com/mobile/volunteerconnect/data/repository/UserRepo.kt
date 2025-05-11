@@ -25,4 +25,20 @@ class UserRepo @Inject constructor(
         }
         return null  // Return null if token is not available
     }
+    suspend fun approveApplication(applicationId: Int): Boolean {
+        val token = userPreferences.getToken()
+        return token?.let {
+            val response = apiService.approveApplication(applicationId, "Bearer $it")
+            response.isSuccessful
+        } ?: false
+    }
+
+    suspend fun rejectApplication(applicationId: Int): Boolean {
+        val token = userPreferences.getToken()
+        return token?.let {
+            val response = apiService.rejectApplication(applicationId, "Bearer $it")
+            response.isSuccessful
+        } ?: false
+    }
+
 }

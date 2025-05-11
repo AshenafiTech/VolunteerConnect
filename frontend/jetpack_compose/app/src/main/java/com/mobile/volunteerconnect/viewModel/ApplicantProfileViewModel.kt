@@ -26,4 +26,19 @@ class ApplicantProfileViewModel @Inject constructor(
             _userProfile.value = profile
         }
     }
+
+    fun approveApplication(applicationId: Int, onResult: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            val success = userRepo.approveApplication(applicationId)
+            onResult(success)
+        }
+    }
+
+    fun rejectApplication(applicationId: Int, onResult: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            val success = userRepo.rejectApplication(applicationId)
+            onResult(success)
+        }
+    }
+
 }

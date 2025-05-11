@@ -11,17 +11,7 @@ import com.mobile.volunteerconnect.view.components.TopBarComponent
 
 @Composable
 fun CreatePost(){
-    Surface(
-        modifier = Modifier
-            .fillMaxSize()
-        ,
-        color = Color(0xFFF8F9FB)
-    ) {
-        Column(modifier = Modifier.fillMaxSize()) {
-            TopBarComponent("CreatePost")
 
-        }
-    }
 }
 
 @Preview(showBackground = true)

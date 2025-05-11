@@ -67,6 +67,7 @@ fun ApplicantProfile(
                         text = "Profile",
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold
+
                     )
                 }
             }
@@ -121,6 +122,17 @@ fun ApplicantProfile(
                                 )
                                 Text(user.name, fontWeight = FontWeight.Bold, fontSize = 20.sp)
                                 Text(user.role, color = Color.Gray)
+
+                                Text(
+                                    text = "Status: ${status.replaceFirstChar { it.uppercase() }}",
+                                    color = when (status.lowercase()) {
+                                        "approved" -> Color(0xFF27AE60)
+                                        "rejected" -> Color(0xFFEB5757)
+                                        else -> Color.Gray
+                                    },
+                                    fontWeight = FontWeight.SemiBold,
+                                    modifier = Modifier.padding(top = 4.dp)
+                                )
                             }
                         }
                     }
@@ -186,18 +198,31 @@ fun ApplicantProfile(
                                     horizontalArrangement = Arrangement.SpaceEvenly
                                 ) {
                                     Button(
-                                        onClick = { /* approve logic */ },
+                                        onClick = {
+                                            viewModel.approveApplication(userId) { success ->
+                                                if (success) {
+                                                    navController.popBackStack()
+                                                }
+                                            }
+                                        },
                                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF27AE60))
                                     ) {
                                         Text("Approve")
                                     }
 
                                     Button(
-                                        onClick = { /* reject logic */ },
+                                        onClick = {
+                                            viewModel.rejectApplication(userId) { success ->
+                                                if (success) {
+                                                    navController.popBackStack()
+                                                }
+                                            }
+                                        },
                                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFEB5757))
                                     ) {
                                         Text("Reject")
                                     }
+
                                 }
                             }
                         }

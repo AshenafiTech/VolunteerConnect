@@ -41,7 +41,7 @@ fun Posts(
     var selectedCategory by remember { mutableStateOf("All") }
 
     LaunchedEffect(Unit) {
-        viewModel.fetchOrgEvents()  // Fetching events when the composable is first launched
+        viewModel.fetchOrgEvents()
     }
 
     Surface(
@@ -51,12 +51,11 @@ fun Posts(
         Column(modifier = Modifier.fillMaxSize()) {
             TopBarComponent("Posts")
 
-            // Simple Search Bar
             SimpleBar(
                 searchQuery = searchQuery,
                 onQueryChange = {
                     searchQuery = it
-                    viewModel.onSearchQueryChanged(it) // Update the search query in the ViewModel
+                    viewModel.onSearchQueryChanged(it)
                 }
             )
 
@@ -72,13 +71,12 @@ fun Posts(
                         selected = selectedCategory == category,
                         onClick = {
                             selectedCategory = category
-                            viewModel.onCategorySelected(category) // Apply selected category filter
+                            viewModel.onCategorySelected(category)
                         }
                     )
                 }
             }
 
-            // Box to handle loading, errors, or displaying events
             Box(modifier = Modifier.fillMaxSize()) {
                 when {
                     isLoading -> {
@@ -172,6 +170,30 @@ fun EventCards(event: EventItem, onViewApplicantsClick: (Int) -> Unit) {
                 color = MaterialTheme.colorScheme.secondary,
                 modifier = Modifier.padding(top = 4.dp)
             )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(Icons.Default.Place, contentDescription = null, tint = Color.Gray, modifier = Modifier.size(16.dp))
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(text = event.location, style = MaterialTheme.typography.bodySmall)
+            }
+
+            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 4.dp)) {
+                Icon(Icons.Default.DateRange, contentDescription = null, tint = Color.Gray, modifier = Modifier.size(16.dp))
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(
+                    text = "${event.date} ${event.time ?: "08:00 - 11:00"}",
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
+
+
+            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 4.dp)) {
+                Icon(Icons.Default.Person, contentDescription = null, tint = Color.Gray, modifier = Modifier.size(16.dp))
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(text = "${event.spotsLeft} spots left", style = MaterialTheme.typography.bodySmall)
+            }
 
             Spacer(modifier = Modifier.height(8.dp))
 
