@@ -9,7 +9,6 @@ import com.mobile.volunteerconnect.data.model.SignupRequest
 import com.mobile.volunteerconnect.data.model.SignupResponse
 import com.mobile.volunteerconnect.data.model.UserProfileRequest
 import com.mobile.volunteerconnect.data.model.UserProfileResponse
-import com.mobile.volunteerconnect.data.model.UserProfileResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Response

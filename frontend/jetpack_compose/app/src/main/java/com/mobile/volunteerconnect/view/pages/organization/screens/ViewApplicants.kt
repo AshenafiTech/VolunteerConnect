@@ -14,7 +14,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.mobile.volunteerconnect.view.pages.components.ApplicantRow
 import com.mobile.volunteerconnect.view.pages.components.ApplicantsSummary
 import com.mobile.volunteerconnect.view.pages.components.TopBarComponent
-import com.mobile.volunteerconnect.view.pages.viewmodel.ApplicantsViewModel
+import com.mobile.volunteerconnect.viewModel.ApplicantsViewModel
 import com.mobile.volunteerconnect.data.model.ApplicantItem
 import androidx.compose.foundation.lazy.items
 

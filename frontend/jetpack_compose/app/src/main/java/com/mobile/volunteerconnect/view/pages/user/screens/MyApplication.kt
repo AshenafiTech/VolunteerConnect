@@ -18,7 +18,7 @@ import com.mobile.volunteerconnect.view.pages.components.ApplicationCard
 import com.mobile.volunteerconnect.view.pages.components.ApplicationStatus
 import com.mobile.volunteerconnect.view.pages.components.SegmentedControl
 import com.mobile.volunteerconnect.view.pages.components.TopBarComponent
-import com.mobile.volunteerconnect.view.pages.viewmodel.MyApplicationViewModel
+import com.mobile.volunteerconnect.viewModel.MyApplicationViewModel
 
 @Composable
 fun MyApplication(viewModel: MyApplicationViewModel = hiltViewModel()) {

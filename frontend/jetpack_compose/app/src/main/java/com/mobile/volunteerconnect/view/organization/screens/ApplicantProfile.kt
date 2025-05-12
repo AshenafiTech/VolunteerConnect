@@ -120,8 +120,8 @@ fun ApplicantProfile(
                                     modifier = Modifier.size(100.dp),
                                     tint = Color.Black
                                 )
-                                Text(user.name, fontWeight = FontWeight.Bold, fontSize = 20.sp)
-                                Text(user.role, color = Color.Gray)
+                                Text(user.name.toString(), fontWeight = FontWeight.Bold, fontSize = 20.sp)
+//                                Text(user.role, color = Color.Gray)
 
                                 Text(
                                     text = "Status: ${status.replaceFirstChar { it.uppercase() }}",
@@ -181,14 +181,14 @@ fun ApplicantProfile(
 
                                 Text("Skills", fontWeight = FontWeight.SemiBold)
                                 FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                    user.skills.forEach { SkillChip(it) }
+                                    user.skills?.forEach { SkillChip(it) }
                                 }
 
                                 Spacer(modifier = Modifier.height(8.dp))
 
                                 Text("Interests", fontWeight = FontWeight.SemiBold)
                                 FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                    user.interests.forEach { SkillChip(it) }
+                                    user.interests?.forEach { SkillChip(it) }
                                 }
 
                                 Spacer(modifier = Modifier.height(16.dp))

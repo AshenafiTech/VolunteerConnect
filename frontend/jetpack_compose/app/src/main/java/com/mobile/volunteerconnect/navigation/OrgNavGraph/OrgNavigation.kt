@@ -117,17 +117,17 @@ fun OrgNavigation() {
         ) {
             composable(OrgScreens.Home.name) { Home() }
             composable(OrgScreens.CreatePost.name) { CreatePostScreen(navController) }
-            composable(OrgScreens.ViewApplicants.name) { ViewApplicants(navController) }
+//            composable(OrgScreens.ViewApplicants.name) { ViewApplicants(navController) }
 //            composable(OrgScreens.ViewApplicants.name) { ViewApplicants() }
 //            composable(OrgScreens.UserProfile.name) { UserProfile() }
-            composable("ApplicantProfile/{userId}") { backStackEntry ->
-                val userId = backStackEntry.arguments?.getString("userId")
-                userId?.let {
-//                    ApplicantProfile(navController = navController, userId = it)
-                    ApplicantProfile()
-            composable(OrgScreens.Posts.name) { Posts(navController = navController) } // Pass navController here
-            composable(OrgScreens.Organization.name) { Organization() }
-            composable(OrgScreens.UserProfile.name) { Organization() }
+//            composable("ApplicantProfile/{userId}") { backStackEntry ->
+//                val userId = backStackEntry.arguments?.getString("userId")
+//                userId?.let {
+////                    ApplicantProfile(navController = navController, userId = it, status = status)
+////                    ApplicantProfile()
+//            composable(OrgScreens.Posts.name) { Posts(navController = navController) } // Pass navController here
+//            composable(OrgScreens.Organization.name) { Organization() }
+////            composable(OrgScreens.UserProfile.name) { Organization() }
 
             composable(
                 "view_applicants/{eventId}",
