@@ -37,7 +37,6 @@ fun ViewApplicants(
 
     Column(modifier = Modifier.fillMaxSize()) {
 
-        // Top Bar with back button and title
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -84,7 +83,7 @@ fun ViewApplicants(
                     ApplicantRow(
                         applicant = applicant,
                         onViewClick = {
-                            // Navigate to ApplicantProfile screen passing the userId and status
+                            // Navigate to ApplicantProfile screen passing the userId  status and eventId
                             navController.navigate("applicant_profile/${applicant.userId}/${applicant.status}/${eventId}")
                         }
                     )

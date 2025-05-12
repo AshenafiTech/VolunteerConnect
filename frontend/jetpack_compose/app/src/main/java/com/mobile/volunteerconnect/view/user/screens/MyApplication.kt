@@ -36,7 +36,7 @@ fun MyApplication(viewModel: MyApplicationViewModel = hiltViewModel()) {
             organization = response.subtitle,
             date = response.date,
             time = response.time,
-            eventId = response.eventId // Use eventId from the response
+            eventId = response.eventId
         )
     }
 

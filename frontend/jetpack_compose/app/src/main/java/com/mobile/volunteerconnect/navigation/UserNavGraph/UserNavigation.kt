@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.*
+import com.mobile.volunteerconnect.view.user.screens.ApplicationPage
 import com.mobile.volunteerconnect.view.user.screens.Explore
 import com.mobile.volunteerconnect.view.user.screens.Home
 import com.mobile.volunteerconnect.view.user.screens.MyApplication
@@ -80,9 +81,20 @@ fun UserNavigation() {
             modifier = Modifier.padding(paddingValues)
         ) {
             composable(UserScreens.Home.name) { Home() }
-            composable(UserScreens.Explore.name) { Explore() }
+//            composable(UserScreens.Explore.name) { Explore() }
+            composable(UserScreens.Explore.name) {
+                Explore(navController = navController)
+            }
+
             composable(UserScreens.MyApplication.name) { MyApplication() }
             composable(UserScreens.Profile.name) { Profile() }
+            composable("ApplicationPage/{eventId}") { backStackEntry ->
+                val eventId = backStackEntry.arguments?.getString("eventId")?.toIntOrNull()
+                ApplicationPage(eventId = eventId, onBack = { navController.popBackStack() })
+            }
+
+
+
         }
     }
 }
