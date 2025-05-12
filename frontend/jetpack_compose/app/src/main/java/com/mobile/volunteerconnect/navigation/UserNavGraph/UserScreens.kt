@@ -5,6 +5,6 @@ enum class UserScreens {
     Home,
     Explore,
     MyApplication,
-    Profile
-
+    Profile,
+    EditProfile
 }

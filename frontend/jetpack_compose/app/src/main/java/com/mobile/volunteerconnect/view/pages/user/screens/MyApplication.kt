@@ -34,7 +34,7 @@ fun MyApplication(viewModel: MyApplicationViewModel = hiltViewModel()) {
             title = response.title,
             organization = response.subtitle,
             date = response.date,
-            time = response.time
+            time = response.time.toString()
         )
     }
 

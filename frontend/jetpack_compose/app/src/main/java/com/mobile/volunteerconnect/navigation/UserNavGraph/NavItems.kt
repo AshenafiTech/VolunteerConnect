@@ -2,6 +2,7 @@ package com.mobile.volunteerconnect.navigation.UserNavGraph
 
 
 import com.mobile.volunteerconnect.R
+import com.mobile.volunteerconnect.navigation.OrgNavGraph.OrgScreens
 
 data class NavItem(
     val label: String,
