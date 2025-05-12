@@ -138,8 +138,8 @@ fun SignupScreen(
         Column(modifier = Modifier.fillMaxWidth()) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 RadioButton(
-                    selected = uiState.role == "Volunteer",
-                    onClick = { viewModel.onRoleChange("Volunteer") }
+                    selected = uiState.role == "volunteer",
+                    onClick = { viewModel.onRoleChange("volunteer") }
                 )
                 Text(
                     text = "Volunteer",
@@ -149,8 +149,8 @@ fun SignupScreen(
 
             Row(verticalAlignment = Alignment.CenterVertically) {
                 RadioButton(
-                    selected = uiState.role == "Organization",
-                    onClick = { viewModel.onRoleChange("Organization") }
+                    selected = uiState.role == "organization",
+                    onClick = { viewModel.onRoleChange("organization") }
                 )
                 Text(
                     text = "Organization",
