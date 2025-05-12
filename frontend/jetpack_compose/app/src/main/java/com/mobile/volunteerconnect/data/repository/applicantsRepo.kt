@@ -8,7 +8,8 @@ class applicantsRepo @Inject constructor(
     private val api: applicantApi
 ) {
 
-    suspend fun getApplicants(): List<ApplicantItem> {
-        return api.getApplicants()
+    // fetch applicants for a specific event by eventId
+    suspend fun getApplicantsByEvent(eventId: Int): List<ApplicantItem> {
+        return api.getApplicantsByEvent(eventId)
     }
 }

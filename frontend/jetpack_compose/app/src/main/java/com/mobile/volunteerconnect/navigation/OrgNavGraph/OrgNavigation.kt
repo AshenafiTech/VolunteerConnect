@@ -2,25 +2,33 @@ package com.mobile.volunteerconnect.navigation.OrgNavGraph
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import android.util.Log
+import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.*
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.navArgument
 import com.mobile.volunteerconnect.R
 import com.mobile.volunteerconnect.data.preferences.UserPreferences
 import com.mobile.volunteerconnect.view.organization.screens.ApplicantProfile
 import com.mobile.volunteerconnect.view.organization.screens.Home
 import com.mobile.volunteerconnect.view.organization.screens.ViewApplicants
+import com.mobile.volunteerconnect.view.organization.screens.*
 import com.mobile.volunteerconnect.view.pages.createpost.CreatePostScreen
 import com.mobile.volunteerconnect.view.pages.login.LoginScreen
 import com.mobile.volunteerconnect.view.pages.profile.EditOrganizationProfileScreen
@@ -40,7 +48,6 @@ val orgNavItems = listOf(
     OrgNavItem("Applicants", R.drawable.myapplicationicon, OrgScreens.ViewApplicants.name),
     OrgNavItem("Profile", R.drawable.profile_icon, OrgScreens.OrganizationProfile.name)
 )
-
 
 
 
@@ -118,6 +125,19 @@ fun OrgNavigation() {
                 userId?.let {
 //                    ApplicantProfile(navController = navController, userId = it)
                     ApplicantProfile()
+            composable(OrgScreens.Posts.name) { Posts(navController = navController) } // Pass navController here
+            composable(OrgScreens.Organization.name) { Organization() }
+            composable(OrgScreens.UserProfile.name) { Organization() }
+
+            composable(
+                "view_applicants/{eventId}",
+                arguments = listOf(navArgument("eventId") { type = NavType.StringType })
+            ) { backStackEntry ->
+                val eventId = backStackEntry.arguments?.getString("eventId")
+                if (eventId != null) {
+                    ViewApplicants(eventId = eventId, navController = navController) // Pass the eventId to the screen
+                } else {
+                    Log.e("Navigation", "Invalid or missing eventId")
                 }
             }
             composable(OrgScreens.OrganizationProfile.name) {
@@ -155,6 +175,22 @@ fun OrgNavigation() {
                 )
             }
 
+
+            composable(
+                "applicant_profile/{userId}/{status}",
+                arguments = listOf(
+                    navArgument("userId") { type = NavType.IntType },
+                    navArgument("status") { type = NavType.StringType }
+                )
+            ) { backStackEntry ->
+                val userId = backStackEntry.arguments?.getInt("userId")
+                val status = backStackEntry.arguments?.getString("status")
+                if (userId != null && status != null) {
+                    ApplicantProfile(userId = userId, status = status, navController = navController)
+                } else {
+                    Log.e("Navigation", "Invalid or missing userId or status")
+                }
+            }
 
 
 

@@ -1,6 +1,5 @@
 package com.mobile.volunteerconnect.viewModel
 
-
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mobile.volunteerconnect.data.model.EventItem
@@ -21,13 +20,18 @@ sealed class OrgEventsUiState {
 @HiltViewModel
 class OrgEventsViewModel @Inject constructor(
     private val repository: OrgEventsRepository,
-    private val userPreferences: UserPreferences
+    private val userPreferences: UserPreferences,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<OrgEventsUiState>(OrgEventsUiState.Loading)
     val uiState: StateFlow<OrgEventsUiState> = _uiState
 
     private var allEvents: List<EventItem> = emptyList()
+
+    private val _searchQuery = MutableStateFlow("")
+    private val _selectedCategory = MutableStateFlow("All")
+
+    val selectedCategory: StateFlow<String> = _selectedCategory
 
     init {
         loadOrgEvents()
@@ -39,6 +43,7 @@ class OrgEventsViewModel @Inject constructor(
             try {
                 allEvents = repository.getOrgEvents()
                 val name = userPreferences.getUserName() ?: "User"
+                applyFilters()
                 _uiState.value = OrgEventsUiState.Success(allEvents, name)
             } catch (e: Exception) {
                 _uiState.value = OrgEventsUiState.Error("Failed to load events: ${e.message}")
@@ -47,15 +52,27 @@ class OrgEventsViewModel @Inject constructor(
     }
 
     fun onSearchQueryChanged(query: String) {
-        val filtered = if (query.isBlank()) {
-            allEvents
-        } else {
-            allEvents.filter {
-                it.title.contains(query, ignoreCase = true) ||
-                        it.subtitle.contains(query, ignoreCase = true) ||
-                        it.category.contains(query, ignoreCase = true)
-            }
+        _searchQuery.value = query
+        applyFilters()
+    }
+
+    fun onCategorySelected(category: String) {
+        _selectedCategory.value = category
+        applyFilters()
+    }
+
+    private fun applyFilters() {
+        val query = _searchQuery.value.lowercase()
+        val category = _selectedCategory.value
+
+        val filtered = allEvents.filter { event ->
+            val matchesCategory = category == "All" || event.category.equals(category, ignoreCase = true)
+            val matchesQuery = event.title.contains(query, ignoreCase = true) ||
+                    event.subtitle.contains(query, ignoreCase = true) ||
+                    event.category.contains(query, ignoreCase = true)
+            matchesCategory && matchesQuery
         }
+
         val name = (uiState.value as? OrgEventsUiState.Success)?.userName ?: "User"
         _uiState.value = OrgEventsUiState.Success(filtered, name)
     }
