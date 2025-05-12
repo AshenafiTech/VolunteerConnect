@@ -46,13 +46,13 @@ interface ApiService {
     ): Response<UserProfileResponse>
 
 
-    @PATCH("applications/{id}/approve")
+    @PATCH("/api/applications/{id}/approve")
     suspend fun approveApplication(
         @Path("id") applicationId: Int,
         @Header("Authorization") token: String
     ): Response<Unit>
 
-    @PATCH("applications/{id}/reject")
+    @PATCH("/api/applications/{id}/reject")
     suspend fun rejectApplication(
         @Path("id") applicationId: Int,
         @Header("Authorization") token: String

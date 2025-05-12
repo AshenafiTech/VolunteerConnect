@@ -85,7 +85,7 @@ fun ViewApplicants(
                         applicant = applicant,
                         onViewClick = {
                             // Navigate to ApplicantProfile screen passing the userId and status
-                            navController.navigate("applicant_profile/${applicant.userId}/${applicant.status}")
+                            navController.navigate("applicant_profile/${applicant.userId}/${applicant.status}/${eventId}")
                         }
                     )
                 }
