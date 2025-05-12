@@ -26,6 +26,7 @@ import com.mobile.volunteerconnect.view.user.screens.ApplicationPage
 import com.mobile.volunteerconnect.view.user.screens.Explore
 import com.mobile.volunteerconnect.view.user.screens.Home
 import com.mobile.volunteerconnect.view.user.screens.MyApplication
+import com.mobile.volunteerconnect.view.user.screens.Profile
 import kotlinx.coroutines.launch
 
 @Composable
@@ -115,6 +116,7 @@ fun UserNavigation() {
                         }}
                 )
             }
+
             composable(UserScreens.EditProfile.name) {
                 EditProfileScreen(
                     viewModel = hiltViewModel(),
@@ -124,7 +126,7 @@ fun UserNavigation() {
             }
 
 
-            composable(UserScreens.Profile.name) { Profile() }
+
             composable("ApplicationPage/{eventId}") { backStackEntry ->
                 val eventId = backStackEntry.arguments?.getString("eventId")?.toIntOrNull()
                 ApplicationPage(eventId = eventId, onBack = { navController.popBackStack() })

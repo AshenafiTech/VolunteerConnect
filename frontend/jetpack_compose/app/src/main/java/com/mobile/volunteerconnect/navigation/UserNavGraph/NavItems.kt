@@ -26,6 +26,7 @@ val listOfNavItems: List<NavItem> = listOf(
         iconResId = R.drawable.myapplicationicon,
         route = UserScreens.MyApplication.name
     ),
+
     NavItem(
         label = "Profile",
         iconResId = R.drawable.profile_icon,

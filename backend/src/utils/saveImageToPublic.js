@@ -14,7 +14,6 @@ const storage = multer.diskStorage({
     cb(null, uniqueName);
   }
 });
-console.log("saving image to public");
 const upload = multer({ storage });
 
 function saveImageToPublic(req, res, next) {

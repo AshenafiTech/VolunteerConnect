@@ -45,7 +45,7 @@ data class OrgNavItem(
 val orgNavItems = listOf(
     OrgNavItem("Home", R.drawable.home_icon, OrgScreens.Home.name),
     OrgNavItem("Create Post", R.drawable.createpost_icon, OrgScreens.CreatePost.name),
-    OrgNavItem("Applicants", R.drawable.myapplicationicon, OrgScreens.ViewApplicants.name),
+    OrgNavItem("Applicants", R.drawable.myapplicationicon, OrgScreens.Posts.name),
     OrgNavItem("Profile", R.drawable.profile_icon, OrgScreens.OrganizationProfile.name)
 )
 
@@ -140,6 +140,7 @@ fun OrgNavigation() {
                     Log.e("Navigation", "Invalid or missing eventId")
                 }
             }
+
             composable(OrgScreens.OrganizationProfile.name) {
                 // obtain your Hilt ViewModel
                 val profileViewModel: ProfileViewModel = hiltViewModel()
@@ -166,6 +167,7 @@ fun OrgNavigation() {
                     }
                 )
             }
+            composable(OrgScreens.Posts.name) { Posts(navController = navController) }
             composable(OrgScreens.EditOrganizationProfile.name) {
                 EditOrganizationProfileScreen(
                     viewModel = hiltViewModel(),

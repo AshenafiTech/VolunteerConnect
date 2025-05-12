@@ -1,6 +1,8 @@
 package com.mobile.volunteerconnect.data.api
 
 import com.mobile.volunteerconnect.data.model.CreateEventRequest
+import com.mobile.volunteerconnect.data.model.DeleteUserProfileResponse
+import com.mobile.volunteerconnect.data.model.EventData
 import com.mobile.volunteerconnect.data.model.EventResponse
 import com.mobile.volunteerconnect.data.model.LoginRequest
 import com.mobile.volunteerconnect.data.model.LoginResponse

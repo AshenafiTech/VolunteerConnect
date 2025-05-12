@@ -724,78 +724,91 @@ const deleteApplication = async (req, res) => {
   }
 };
 
-const approveApplication = async (req, res) => {
 
+const approveApplication = async (req, res) => {
   const tokenData = getTokenData(req);
-  if (!tokenData?.role == "volunteer") {
-    return res.status(403).json({ message: 'Only organizations can approve applications.' });
+  console.log(tokenData);
+  if (tokenData.role == "volunteer") {
+    return res
+      .status(403)
+      .json({ message: "Only organizations can approve applications." });
   }
 
-  const applicationId = req.params.id;
-
+  const eventId = req.params.id;
+  console.log("body", req.body, "params", req.params);
+  
   try {
     const [check] = await dbConnection.execute(
-      'SELECT * FROM applications WHERE id = ? AND organization = ?',
-      [applicationId, tokenData.name]
+      "SELECT * FROM applications WHERE event_id = ? AND organization = ?",
+      [eventId, tokenData.name]
     );
 
     if (check.length === 0) {
-      return res.status(404).json({ message: 'Application not found or not associated with your organization.' });
+      return res.status(404).json({
+        message:
+          "Application not found or not associated with your organization.",
+      });
     }
 
     await dbConnection.execute(
-      'UPDATE applications SET status = ? WHERE id = ?',
-      ['Approved', applicationId]
+      "UPDATE applications SET status = ? WHERE event_id = ?",
+      ["Approved", eventId]
     );
 
-    res.status(200).json({ message: 'Application approved.' });
+    res.status(200).json({ message: "Application approved." });
   } catch (error) {
-    res.status(500).json({ message: 'Error approving application', error });
+    console.log("Error",error)
+
+    res.status(500).json({ message: "Error approving application", error });
   }
 };
 
-
 const rejectApplication = async (req, res) => {
-  
   const tokenData = getTokenData(req);
-  if (!tokenData?.role == "volunteer") {
-    return res.status(403).json({ message: 'Only organizations can approve applications.' });
+  if (tokenData.role == "volunteer") {
+    return res
+      .status(403)
+      .json({ message: "Only organizations can reject applications." });
   }
 
-  const applicationId = req.params.id;
+  const eventId = req.params.id;
+  console.log("body", req.body, "params", req.params);
 
   try {
     const [check] = await dbConnection.execute(
-      'SELECT * FROM applications WHERE id = ? AND organization = ?',
-      [applicationId, tokenData.name]
+      "SELECT * FROM applications WHERE event_id = ? AND organization = ?",
+      [eventId, tokenData.name]
     );
 
     if (check.length === 0) {
-      return res.status(404).json({ message: 'Application not found or not associated with your organization.' });
+      return res.status(404).json({
+        message:
+          "Application not found or not associated with your organization.",
+      });
     }
 
     await dbConnection.execute(
-      'UPDATE applications SET status = ? WHERE id = ?',
-      ['Canceled', applicationId]
+      "UPDATE applications SET status = ? WHERE event_id = ?",
+      ["Canceled", eventId]
     );
 
-    res.status(200).json({ message: 'Application approved.' });
+    res.status(200).json({ message: "Application approved." });
   } catch (error) {
-    res.status(500).json({ message: 'Error approving application', error });
+    res.status(500).json({ message: "Error approving application", error });
   }
 };
 
 module.exports = {
-    createEvent,
-    updateEvent,
-    deleteEvent,
-    getEventById,
-    getAllEvents,
-    getOrganizationEvents,
-    applyForEvent,
-    getUserEventApplications,
-    getEventApplicants,
-    deleteApplication,
-    approveApplication,
-    rejectApplication
-    };
+  createEvent,
+  updateEvent,
+  deleteEvent,
+  getEventById,
+  getAllEvents,
+  getOrganizationEvents,
+  applyForEvent,
+  getUserEventApplications,
+  getEventApplicants,
+  deleteApplication,
+  approveApplication,
+  rejectApplication,
+};
