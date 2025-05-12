@@ -703,7 +703,7 @@ const deleteApplication = async (req, res) => {
     console.log(`Trying to delete application ID ${applicationId} for user ID ${tokenData.userid}`);
 
     const [result] = await dbConnection.execute(
-      'DELETE FROM applications WHERE id = ? AND user_id = ?',
+      'DELETE FROM applications WHERE event_id = ? AND user_id = ?',
       [applicationId, tokenData.userid]
     );
 

@@ -1,77 +1,111 @@
 package com.mobile.volunteerconnect.navigation
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.mobile.volunteerconnect.data.model.User
 import com.mobile.volunteerconnect.data.preferences.AuthRepository
 import com.mobile.volunteerconnect.data.preferences.UserPreferences
 import com.mobile.volunteerconnect.navigation.model.UserRole
 import com.mobile.volunteerconnect.navigation.model.UserState
 import com.mobile.volunteerconnect.view.pages.login.LoginScreen
 import com.mobile.volunteerconnect.view.pages.signup.SignupScreen
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeout
 
 @Composable
 fun AppNavHost(
-    navController: NavHostController,
-    authRepository: AuthRepository,
-    userPreferences: UserPreferences
+    navController: NavHostController = rememberNavController(),
+    authRepository: AuthRepository = hiltViewModel(),
+    userPreferences: UserPreferences = hiltViewModel()
 ) {
-    // To track if user is logged in or not
     val userState = remember { mutableStateOf<UserState?>(null) }
-    // Track loading state
     val isLoading = remember { mutableStateOf(true) }
+    val errorState = remember { mutableStateOf<String?>(null) }
+    val scope = rememberCoroutineScope()
 
-    // LaunchedEffect to perform side effects such as checking for token validity
-    LaunchedEffect(true) {
-        val token = userPreferences.getToken()  // Get the token from preferences
+    // Handle initial auth check
+    LaunchedEffect(Unit) {
+        try {
+            withTimeout(30_000) {
+                val token = userPreferences.getToken()
+                android.util.Log.d("AuthFlow", "Checking auth state. Token exists: ${token != null}")
 
-        if (token != null && authRepository.verifyToken()) {
-            // Token is valid, user is authenticated
-            val userName = userPreferences.getUserName() // Fetch user name
-            val userRole = userPreferences.getUserRole() // Fetch user role
-            val userEmail = userPreferences.getUserEmail() // Fetch user email
+                if (token != null) {
+                    val isValid = authRepository.verifyToken()
+                    android.util.Log.d("AuthFlow", "Token verification result: $isValid")
 
-            //  UserState data to be passed
-            userState.value = UserState(
-                userName ?: "Unknown",
-                userEmail ?: "Unknown",
-                userRole ?: "Unknown"
-            )
+                    if (isValid) {
+                        val userName = userPreferences.getUserName() ?: "Unknown"
+                        val userRole = userPreferences.getUserRole() ?: "Unknown"
+                        val userEmail = userPreferences.getUserEmail() ?: "Unknown"
 
-            // Set loading to false after the data is loaded
-            isLoading.value = false
-            navController.navigate("main") {
-                popUpTo("login") { inclusive = true }
+                        userState.value = UserState(userName, userEmail, userRole)
+                        android.util.Log.d("AuthFlow", "User authenticated: $userName")
+                    } else {
+                        android.util.Log.w("AuthFlow", "Invalid token, clearing data")
+                        userPreferences.clearUserData()
+                    }
+                }
             }
-        } else {
-            // Token not found or invalid, navigate to login
+        } catch (e: Exception) {
+            errorState.value = "Authentication check failed: ${e.message}"
+            android.util.Log.e("AuthFlow", "Auth check error", e)
+        } finally {
             isLoading.value = false
-            navController.navigate("login")
         }
     }
 
-    // Navigation graph
-    NavHost(navController = navController, startDestination = if (isLoading.value) "loading" else if (userState.value != null) "main" else "login") {
-        composable("loading") {
-            // Show a loading screen while waiting for data
-            CircularProgressIndicator()
-        }
+    // Show loading/error state if needed
+    if (isLoading.value) {
+        LoadingScreen(errorState.value)
+        return
+    }
 
+
+    // Main navigation graph
+    NavHost(
+        navController = navController,
+        startDestination = when {
+            userState.value != null -> "main"
+            else -> "login"
+        }
+    ) {
         composable("login") {
             LoginScreen(
                 onLoginSuccess = {
-                    // After login success, navigate to the main screen
-                    navController.navigate("main") {
-                        popUpTo("login") { inclusive = true }
+                    scope.launch {
+                        try {
+                            // Get fresh user data after login
+                            val userName = userPreferences.getUserName() ?: "Unknown"
+                            val userRole = userPreferences.getUserRole() ?: "Unknown"
+                            val userEmail = userPreferences.getUserEmail() ?: "Unknown"
+                            userState.value = UserState(userName, userEmail, userRole)
+
+                            navController.navigate("main") {
+                                popUpTo("login") { inclusive = true }
+                            }
+                        } catch (e: Exception) {
+                            errorState.value = "Navigation failed: ${e.message}"
+                        }
                     }
                 },
                 onSignUpClick = {
@@ -83,10 +117,10 @@ fun AppNavHost(
         composable("signup") {
             SignupScreen(
                 onSignupSuccess = {
-                    // After signup success, navigate to the main screen
-                    navController.navigate("main") {
+                    navController.navigate("login") {
                         popUpTo("login") { inclusive = true }
                     }
+
                 },
                 onLoginClick = {
                     navController.navigate("login")
@@ -96,21 +130,42 @@ fun AppNavHost(
 
         composable("main") {
             userState.value?.let { user ->
-                val roleEnum = try {
+                when (val role = try {
                     UserRole.fromString(user.role)
                 } catch (e: IllegalArgumentException) {
                     null
-                }
-
-                roleEnum?.let { role ->
-                    MainNav(role) // Navigate to the appropriate screen based on user role
-                } ?: run {
-                    // Handle invalid role error
-                    navController.navigate("login")
+                }) {
+                    null -> {
+                        LaunchedEffect(Unit) {
+                            errorState.value = "Invalid user role: ${user.role}"
+                            navController.navigate("login") { popUpTo(0) }
+                        }
+                        Box {} // Empty composable while navigating
+                    }
+                    else -> MainNav(userRole = user.role.toString())
                 }
             } ?: run {
-                // Handle null userState error
-                navController.navigate("login")
+                LaunchedEffect(Unit) {
+                    navController.navigate("login") { popUpTo(0) }
+                }
+                Box {} // Empty composable while navigating
+            }
+        }
+    }
+}
+
+@Composable
+private fun LoadingScreen(error: String?) {
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            CircularProgressIndicator()
+            Spacer(modifier = Modifier.height(16.dp))
+            if (error != null) {
+                Text(
+                    text = error,
+                    color = MaterialTheme.colorScheme.error,
+                    textAlign = TextAlign.Center
+                )
             }
         }
     }

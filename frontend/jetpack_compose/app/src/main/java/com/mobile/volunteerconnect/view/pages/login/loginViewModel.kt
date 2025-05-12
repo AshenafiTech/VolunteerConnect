@@ -11,6 +11,7 @@ import com.mobile.volunteerconnect.data.preferences.UserPreferences
 import com.mobile.volunteerconnect.data.repository.LoginRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeout
 import javax.inject.Inject
 
 @HiltViewModel
@@ -34,57 +35,66 @@ class LoginViewModel @Inject constructor(
         viewModelScope.launch {
             uiState = uiState.copy(isLoading = true, error = null)
             try {
-                val response = repository.login(
-                    LoginRequest(
-                        email = uiState.email,
-                        password = uiState.password
+                // Add timeout for network request
+                val response = withTimeout(30_000) {
+                    repository.login(
+                        LoginRequest(
+                            email = uiState.email,
+                            password = uiState.password
+                        )
                     )
-                )
+                }
 
                 val responseBody = response.body()
                 val user = responseBody?.user
                 val token = responseBody?.token
 
                 if (response.isSuccessful && user != null && token != null) {
-                    // Use the token immediately for navigation or any logic
+                    // Save data synchronously before marking success
+                    saveUserData(token, user)
+
+                    // Update UI state after successful save
                     uiState = uiState.copy(
                         isLoading = false,
                         isSuccess = true,
                         token = token,
                         user = user
                     )
-
-                    // Access the token immediately for navigation
-                    // Navigate to main screen here, without waiting for saving
-
-                    // Save the token asynchronously in the background
-                    saveUserDataAsync(token, user)
+                    android.util.Log.d("AuthFlow", "Login and data save successful")
                 } else {
+                    val errorMsg = responseBody?.message ?: response.message() ?: "Unknown error occurred"
                     uiState = uiState.copy(
                         isLoading = false,
-                        error = response.message()
+                        error = errorMsg
                     )
+                    android.util.Log.e("AuthFlow", "Login failed: $errorMsg")
                 }
             } catch (e: Exception) {
+                val errorMsg = e.message ?: "Unknown error occurred"
                 uiState = uiState.copy(
                     isLoading = false,
-                    error = e.message ?: "Unknown error occurred"
+                    error = errorMsg
                 )
+                android.util.Log.e("AuthFlow", "Login exception: $errorMsg", e)
             }
         }
     }
 
-    // Save user data asynchronously
-    private suspend fun saveUserDataAsync(token: String, user: User) {
-        // Perform saving in the background (this happens asynchronously)
-        userPreferences.saveUserData(
-            token = token,
-            name = user.name,
-            email = user.email,
-            role = user.role
-        )
+    private suspend fun saveUserData(token: String, user: User) {
+        try {
+            withTimeout(10_000) {
+                userPreferences.saveUserData(
+                    token = token,
+                    name = user.name,
+                    email = user.email,
+                    role = user.role
+                )
+            }
+        } catch (e: Exception) {
+            android.util.Log.e("AuthFlow", "Failed to save user data", e)
+            throw e
+        }
     }
-
 
     fun resetError() {
         uiState = uiState.copy(error = null)
