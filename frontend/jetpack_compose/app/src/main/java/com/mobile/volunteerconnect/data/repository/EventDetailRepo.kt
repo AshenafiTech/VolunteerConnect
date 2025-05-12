@@ -19,8 +19,15 @@ class EventDetailRepo @Inject constructor(
 
     suspend fun applyToEvent(eventId: Int) {
         val response = apiService.applyToEvent(eventId)
-        if (!response.isSuccessful) throw Exception("Application failed: ${response.code()}")
+
+        if (response.isSuccessful) {
+        } else if (response.code() == 409) {
+            throw Exception("Existing application found")
+        } else {
+            throw Exception("Application failed: ${response.code()}")
+        }
     }
+
 
 
 }

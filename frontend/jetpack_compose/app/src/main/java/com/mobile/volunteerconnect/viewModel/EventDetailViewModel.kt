@@ -34,10 +34,16 @@ class EventDetailViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 applyStatus = null
+
                 repository.applyToEvent(eventId)
+
                 applyStatus = "Application successful!"
             } catch (e: Exception) {
-                applyStatus = "Error: ${e.message}"
+                if (e.message?.contains("Existing application found") == true) {
+                    applyStatus = "You have already applied to this event."
+                } else {
+                    applyStatus = "Error: ${e.message}"
+                }
             }
         }
     }

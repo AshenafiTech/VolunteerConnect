@@ -69,7 +69,7 @@ fun ApplicationPage(
                         },
                         colors = ButtonDefaults.buttonColors(containerColor = primaryBlue)
                     ) {
-                        Text("Apply ${eventId}", color = Color.White)
+                        Text("Apply", color = Color.White)
                     }
                 }
             }
@@ -148,10 +148,11 @@ fun ApplicationPage(
                                 Spacer(modifier = Modifier.height(16.dp))
                                 Text(
                                     text = it,
-                                    color = if (it.contains("Error")) Color.Red else Color.Green,
+                                    color = if (it.contains("Error") || it.contains("already applied")) Color.Red else Color.Green,
                                     fontWeight = FontWeight.Bold
                                 )
                             }
+
 
                             Spacer(modifier = Modifier.height(16.dp))
                             Divider(color = Color.LightGray)
