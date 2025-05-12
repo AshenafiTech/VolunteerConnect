@@ -32,11 +32,11 @@ router.get("/event/:id", getEventById); // post details by id
 router.delete("/event/:eventId", deleteEvent); // delete event by id
 router.put("/event/update/:eventId", saveImageToPublic, updateEvent);  // update event by id
 
-router.get("/event/getallapplications",authMiddleware, getAllEvents);    // explore
+router.get("/events",authMiddleware, getAllEvents);    // explore
 
 router.get("/event/:eventId/applicants/",authMiddleware, getEventApplicants); // get all applicants for an event
 
-router.get("/event/myApplication", getUserEventApplications) // get all applications by user
+router.get("/myevent/myApplication", getUserEventApplications) // get all applications by user
 
 router.post("/event/apply/:eventId",authMiddleware, applyForEvent) // apply for event
 

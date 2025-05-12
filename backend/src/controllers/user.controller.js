@@ -99,7 +99,7 @@ async function getUserById(req, res) {
 
   try {
     const [user] = await dbConnection.query(
-      "SELECT id, name, email, role FROM users WHERE id = ?",
+      "SELECT id, name, email, role, city, phone, bio FROM users WHERE id = ?",
       [userId]
     );
 
