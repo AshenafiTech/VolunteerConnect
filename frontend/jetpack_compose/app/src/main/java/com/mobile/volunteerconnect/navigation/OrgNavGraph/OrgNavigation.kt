@@ -177,16 +177,18 @@ fun OrgNavigation() {
 
 
             composable(
-                "applicant_profile/{userId}/{status}",
+                "applicant_profile/{userId}/{status}/{eventId}",
                 arguments = listOf(
                     navArgument("userId") { type = NavType.IntType },
-                    navArgument("status") { type = NavType.StringType }
+                    navArgument("status") { type = NavType.StringType } ,
+                    navArgument("eventId") { type = NavType.StringType }
                 )
             ) { backStackEntry ->
                 val userId = backStackEntry.arguments?.getInt("userId")
                 val status = backStackEntry.arguments?.getString("status")
+                val eventId = backStackEntry.arguments?.getString("eventId")
                 if (userId != null && status != null) {
-                    ApplicantProfile(userId = userId, status = status, navController = navController)
+                    ApplicantProfile(userId = userId, status = status,eventId = eventId.toString(), navController = navController)
                 } else {
                     Log.e("Navigation", "Invalid or missing userId or status")
                 }

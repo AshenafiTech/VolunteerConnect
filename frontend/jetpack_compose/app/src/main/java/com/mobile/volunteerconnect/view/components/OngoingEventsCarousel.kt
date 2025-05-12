@@ -32,18 +32,7 @@ fun OngoingEventsCarousel() {
                     imageResId = R.drawable.event_one
                 )
             }
-            item {
-                OngoingEventCard(
-                    text = "A single drop of kindness - saving lives together",
-                    imageResId = R.drawable.event_two
-                )
-            }
-            item {
-                OngoingEventCard(
-                    text = "Bringing smiles, building bonds - one moment at a time",
-                    imageResId = R.drawable.event_three
-                )
-            }
+
         }
     }
 }
@@ -52,7 +41,7 @@ fun OngoingEventsCarousel() {
 fun OngoingEventCard(text: String, imageResId: Int) {
     Card(
         modifier = Modifier
-            .width(280.dp)
+            .width(380.dp)
             .padding(end = 8.dp)
     ) {
         Box(

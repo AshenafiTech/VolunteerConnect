@@ -1,7 +1,6 @@
 package com.mobile.volunteerconnect.data.api
 
 import com.mobile.volunteerconnect.data.model.CreateEventRequest
-import com.mobile.volunteerconnect.data.model.DeleteUserProfileResponse
 import com.mobile.volunteerconnect.data.model.EventResponse
 import com.mobile.volunteerconnect.data.model.LoginRequest
 import com.mobile.volunteerconnect.data.model.LoginResponse
@@ -66,15 +65,25 @@ interface ApiService {
     ): Response<UserProfileResponse>
 
 
-    @PATCH("applications/{id}/approve")
+    @GET("api/event/{eventId}")
+    suspend fun getEventById(@Path("eventId") eventId: Int): Response<EventData>
+
+    @PATCH("/api/applications/{id}/approve")
     suspend fun approveApplication(
         @Path("id") applicationId: Int,
         @Header("Authorization") token: String
     ): Response<Unit>
 
-    @PATCH("applications/{id}/reject")
+    @PATCH("/api/applications/{id}/reject")
     suspend fun rejectApplication(
         @Path("id") applicationId: Int,
         @Header("Authorization") token: String
     ): Response<Unit>
+
+
+    @POST("api/event/apply/{eventId}")
+    suspend fun applyToEvent(
+        @Path("eventId") eventId: Int
+    ): Response<Unit>
+
 }

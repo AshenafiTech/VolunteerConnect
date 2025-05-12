@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
 import com.mobile.volunteerconnect.R
 import com.mobile.volunteerconnect.data.model.EventItem
 import com.mobile.volunteerconnect.view.components.TopBarComponent
@@ -29,7 +30,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlin.random.Random
 
 @Composable
-fun Explore(viewModel: OrgEventsViewModel = hiltViewModel()) {
+fun Explore(viewModel: OrgEventsViewModel = hiltViewModel(),navController: NavHostController) {
     val uiState by viewModel.uiState.collectAsState()
     val selectedCategory by viewModel.selectedCategory.collectAsState()
     var searchQuery by remember { mutableStateOf("") }
@@ -107,7 +108,10 @@ fun Explore(viewModel: OrgEventsViewModel = hiltViewModel()) {
                         } else {
                             EventList(
                                 events = filteredEvents,
-                                onEventClick = { eventId -> selectedEventId = eventId }
+                                onEventClick = { eventId ->
+                                    navController.navigate("ApplicationPage/$eventId")
+                                }
+
                             )
                         }
                     }

@@ -28,6 +28,7 @@ import androidx.compose.foundation.layout.FlowRow
 fun ApplicantProfile(
     userId: Int,
     status: String,
+    eventId: String,
     navController: NavController,
     viewModel: ApplicantProfileViewModel = hiltViewModel()
 ) {
@@ -199,7 +200,7 @@ fun ApplicantProfile(
                                 ) {
                                     Button(
                                         onClick = {
-                                            viewModel.approveApplication(userId) { success ->
+                                            viewModel.approveApplication(eventId.toInt()) { success ->
                                                 if (success) {
                                                     navController.popBackStack()
                                                 }
@@ -212,7 +213,7 @@ fun ApplicantProfile(
 
                                     Button(
                                         onClick = {
-                                            viewModel.rejectApplication(userId) { success ->
+                                            viewModel.rejectApplication(eventId.toInt()) { success ->
                                                 if (success) {
                                                     navController.popBackStack()
                                                 }
